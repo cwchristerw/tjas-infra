@@ -2,6 +2,8 @@
 
 Infran toteutus aloitettiin vuonna 2025 ja sen on suunnitellut [Jääkäri Warén](https://christerwaren.fi).
 
+Voit halutessasi pyytää oikeudet tähän Github-repoon. Oikeudet myönnetään vain, jos olet 1.VOS:issa. Voit myös halutessasi forkata projektin ja jatkokehittää sitä eteenpäin tekemällä Pull Requestin.
+
 HAE TIETOJÄRJESTELMÄASENTAJAKSI PUOLUSTUSVOIMILLE!
 
 ## TIETOJÄRJESTELMÄASENTAJA - SE PAREMPI VIESTIMIES
