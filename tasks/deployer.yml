@@ -1,56 +1,131 @@
 ---
-# - name: "Deployer - Nginx - Configure - Create Folder"
-#   ansible.builtin.file:
-#     path: "~/data/nginx/"
-#     state: directory
-#   tags:
-#     - nginx
+- name: "Deployer - Yggdrasil - Configure - Create Folder"
+  ansible.builtin.file:
+    path: "~/data/yggdrasil/"
+    state: directory
+  tags:
+    - yggdrasil
 
-# - name: "Deployer - Nginx - Configure - Create Subfolders"
-#   ansible.builtin.file:
-#     dest: '~/data/nginx/{{ item.path }}'
-#     state: directory
-#   with_filetree: './files/nginx/'
-#   loop_control:
-#     label: "{{ item.path }}"
-#   when:
-#     - item.state == 'directory'
-#   tags:
-#     - nginx
+- name: "Deployer - Yggdrasil - Configure - Create Subfolders"
+  ansible.builtin.file:
+    dest: '~/data/yggdrasil/{{ item.path }}'
+    state: directory
+  with_filetree: './files/yggdrasil/'
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - item.state == 'directory'
+  tags:
+    - yggdrasil
 
-# - name: "Deployer - Nginx - Configure - Generating & Transferring Files"
-#   ansible.builtin.template:
-#     src: '{{ item.src }}'
-#     dest: '~/data/nginx/{{ item.path }}'
-#   with_filetree: './files/nginx/'
-#   loop_control:
-#     label: "{{ item.path }}"
-#   when:
-#     - item.state == 'file'
-#   tags:
-#     - nginx
+- name: "Deployer - Yggdrasil - Configure - Generating & Transferring Files"
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '~/data/yggdrasil/{{ item.path }}'
+  register: deployerTaskY1
+  with_filetree: './files/yggdrasil/'
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - item.state == 'file'
+  tags:
+    - yggdrasil
 
-# - name: "Deployer - Nginx - Pull Image"
-#   containers.podman.podman_image:
-#     name: docker.io/library/nginx
-#     tag: latest
-#     force: true
-#   register: deployerTask3
+- name: "Deployer - Yggdrasil - Pull Image"
+  containers.podman.podman_image:
+    name: docker.io/library/golang
+    tag: alpine
+    force: true
+  register: deployerTaskY2
 
-# - name: "Deployer - Nginx - Run Container"
-#   containers.podman.podman_container:
-#     name: nginx
-#     image: docker.io/library/nginx:latest
-#     state: started
-#     recreate: on
-#     network: host
-#     volumes:
-#       - "{{ ansible_facts.user_dir }}/data/nginx/index.html:/usr/share/nginx/html/index.html:ro"
-#       - "{{ ansible_facts.user_dir }}/data/nginx/config.conf:/etc/nginx/nginx.conf:ro"
-#       - "{{ ansible_facts.user_dir }}/data/nginx/conf/:/etc/nginx/conf.d/:ro"
-#       - "{{ ansible_facts.user_dir }}/data/certs/:/etc/nginx/certs/:ro"
-#     restart_policy: always
-#   when:
-#     - (deployerTask3 is defined and deployerTask3.changed) or deployerTask3 is undefined
-#   tags:
-#     - nginx
+- name: "Deployer - Yggdrasil - Clone Repository"
+  ansible.builtin.git:
+    repo: "https://github.com/yggdrasil-network/yggdrasil-go.git"
+    dest: ".cache/git/yggdrasil"
+  register: deployerTaskY3
+
+- name: "Deployer - Yggdrasil - Pull Image"
+  containers.podman.podman_image:
+    name: pvjjk-1vos-tjas/nginx
+    tag: latest
+    path: "~/data/yggdrasil"
+    build:
+      format: docker
+    force: true
+  register: deployerTaskY4
+
+- name: "Deployer - Yggdrasil - Run Container"
+  containers.podman.podman_container:
+    name: yggdrasil
+    image: pvjjk-1vos-tjas/nginx:latest
+    state: started
+    recreate: on
+    network: host
+    capabilities:
+      - net_admin
+    device:
+      - "/dev/net/tun"
+    volumes:
+      - "{{ ansible_facts.user_dir }}/data/yggdrasil/config.conf:/etc/yggdrasil-network/config.conf"
+    restart_policy: always
+  when:
+    - (deployerTaskY1 is defined and deployerTaskY1.changed) or deployerTaskY1 is undefined or (deployerTaskY2 is defined and deployerTaskY2.changed) or deployerTaskY2 is undefined or (deployerTaskY3 is defined and deployerTaskY3.changed) or deployerTaskY3 is undefined or (deployerTaskY4 is defined and deployerTaskY4.changed) or deployerTaskY4 is undefined
+  tags:
+    - yggdrasil
+
+- name: "Deployer - Nginx - Configure - Create Folder"
+  ansible.builtin.file:
+    path: "~/data/nginx/"
+    state: directory
+  tags:
+    - nginx
+
+- name: "Deployer - Nginx - Configure - Create Subfolders"
+  ansible.builtin.file:
+    dest: '~/data/nginx/{{ item.path }}'
+    state: directory
+  with_filetree: './files/nginx/'
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - item.state == 'directory'
+  tags:
+    - nginx
+
+- name: "Deployer - Nginx - Configure - Generating & Transferring Files"
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '~/data/nginx/{{ item.path }}'
+  register: deployerTaskN1
+  with_filetree: './files/nginx/'
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - item.state == 'file'
+  tags:
+    - nginx
+
+- name: "Deployer - Nginx - Pull Image"
+  containers.podman.podman_image:
+    name: docker.io/library/nginx
+    tag: latest
+    force: true
+  register: deployerTaskN2
+
+- name: "Deployer - Nginx - Run Container"
+  containers.podman.podman_container:
+    name: nginx
+    image: docker.io/library/nginx:latest
+    state: started
+    recreate: on
+    network: host
+    volumes:
+      - "{{ ansible_facts.user_dir }}/data/nginx/index.html:/usr/share/nginx/html/index.html:ro"
+      - "{{ ansible_facts.user_dir }}/data/nginx/config.conf:/etc/nginx/nginx.conf:ro"
+      - "{{ ansible_facts.user_dir }}/data/nginx/conf/:/etc/nginx/conf.d/:ro"
+      #- "{{ ansible_facts.user_dir }}/data/certs/:/etc/nginx/certs/:ro"
+    restart_policy: always
+  when:
+    - (deployerTaskN1 is defined and deployerTaskN1.changed) or deployerTaskN1 is undefined or (deployerTaskN2 is defined and deployerTaskN2.changed) or deployerTaskN2 is undefined
+  tags:
+    - nginx
