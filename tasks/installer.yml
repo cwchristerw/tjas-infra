@@ -12,14 +12,14 @@
     - "task.stdout.find('0 upgraded, 0 newly installed, 0 to remove') == -1"
 
 - name: "Init : Python 3 : Configure - Virtual Environment : Test"
-  ansible.builtin.raw: "/opt/ansible/bin/pip3"
+  ansible.builtin.raw: "~/.venv/ansible/bin/pip3"
   register: task632
   changed_when: false
   failed_when: false
 
 - name: "Init : Python 3 : Configure - Virtual Environment : Delete"
   ansible.builtin.file:
-    path: "/opt/ansible"
+    path: "~/.venv/ansible"
     state: absent
   when:
     - "task632.stdout.find(\"ModuleNotFoundError: No module named 'pip'\") != -1"
@@ -29,7 +29,7 @@
     name: pip
     state: latest
     extra_args: --upgrade
-    virtualenv: /opt/ansible
+    virtualenv: ~/.venv/ansible
     virtualenv_command: "python3 -m venv"
 
 - name: "Installer : Tools : Install"
