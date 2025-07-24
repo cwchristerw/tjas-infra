@@ -1,56 +1,56 @@
 ---
-- name: "Deployer - Nginx - Configure - Create Folder"
-  ansible.builtin.file:
-    path: "~/data/nginx/"
-    state: directory
-  tags:
-    - nginx
+# - name: "Deployer - Nginx - Configure - Create Folder"
+#   ansible.builtin.file:
+#     path: "~/data/nginx/"
+#     state: directory
+#   tags:
+#     - nginx
 
-- name: "Deployer - Nginx - Configure - Create Subfolders"
-  ansible.builtin.file:
-    dest: '~/data/nginx/{{ item.path }}'
-    state: directory
-  with_filetree: './files/nginx/'
-  loop_control:
-    label: "{{ item.path }}"
-  when:
-    - item.state == 'directory'
-  tags:
-    - nginx
+# - name: "Deployer - Nginx - Configure - Create Subfolders"
+#   ansible.builtin.file:
+#     dest: '~/data/nginx/{{ item.path }}'
+#     state: directory
+#   with_filetree: './files/nginx/'
+#   loop_control:
+#     label: "{{ item.path }}"
+#   when:
+#     - item.state == 'directory'
+#   tags:
+#     - nginx
 
-- name: "Deployer - Nginx - Configure - Generating & Transferring Files"
-  ansible.builtin.template:
-    src: '{{ item.src }}'
-    dest: '~/data/nginx/{{ item.path }}'
-  with_filetree: './files/nginx/'
-  loop_control:
-    label: "{{ item.path }}"
-  when:
-    - item.state == 'file'
-  tags:
-    - nginx
+# - name: "Deployer - Nginx - Configure - Generating & Transferring Files"
+#   ansible.builtin.template:
+#     src: '{{ item.src }}'
+#     dest: '~/data/nginx/{{ item.path }}'
+#   with_filetree: './files/nginx/'
+#   loop_control:
+#     label: "{{ item.path }}"
+#   when:
+#     - item.state == 'file'
+#   tags:
+#     - nginx
 
-- name: "Deployer - Nginx - Pull Image"
-  containers.podman.podman_image:
-    name: docker.io/library/nginx
-    tag: latest
-    force: true
-  register: deployerTask3
+# - name: "Deployer - Nginx - Pull Image"
+#   containers.podman.podman_image:
+#     name: docker.io/library/nginx
+#     tag: latest
+#     force: true
+#   register: deployerTask3
 
-- name: "Deployer - Nginx - Run Container"
-  containers.podman.podman_container:
-    name: nginx
-    image: docker.io/library/nginx:latest
-    state: started
-    recreate: on
-    network: host
-    volumes:
-      - "{{ ansible_facts.user_dir }}/data/nginx/index.html:/usr/share/nginx/html/index.html:ro"
-      - "{{ ansible_facts.user_dir }}/data/nginx/config.conf:/etc/nginx/nginx.conf:ro"
-      - "{{ ansible_facts.user_dir }}/data/nginx/conf/:/etc/nginx/conf.d/:ro"
-      - "{{ ansible_facts.user_dir }}/data/certs/:/etc/nginx/certs/:ro"
-    restart_policy: always
-  when:
-    - (deployerTask3 is defined and deployerTask3.changed) or deployerTask3 is undefined
-  tags:
-    - nginx
+# - name: "Deployer - Nginx - Run Container"
+#   containers.podman.podman_container:
+#     name: nginx
+#     image: docker.io/library/nginx:latest
+#     state: started
+#     recreate: on
+#     network: host
+#     volumes:
+#       - "{{ ansible_facts.user_dir }}/data/nginx/index.html:/usr/share/nginx/html/index.html:ro"
+#       - "{{ ansible_facts.user_dir }}/data/nginx/config.conf:/etc/nginx/nginx.conf:ro"
+#       - "{{ ansible_facts.user_dir }}/data/nginx/conf/:/etc/nginx/conf.d/:ro"
+#       - "{{ ansible_facts.user_dir }}/data/certs/:/etc/nginx/certs/:ro"
+#     restart_policy: always
+#   when:
+#     - (deployerTask3 is defined and deployerTask3.changed) or deployerTask3 is undefined
+#   tags:
+#     - nginx
