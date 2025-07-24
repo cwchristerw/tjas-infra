@@ -13,29 +13,29 @@
   with_filetree: './files/nginx/'
   loop_control:
     label: "{{ item.path }}"
-    when:
-     - item.state == 'directory'
+  when:
+    - item.state == 'directory'
   tags:
     - nginx
 
- - name: "Deployer - Nginx - Configure - Generating & Transferring Files"
-   ansible.builtin.template:
-     src: '{{ item.src }}'
-     dest: '~/data/nginx/{{ item.path }}'
-   with_filetree: './files/nginx/'
-   loop_control:
-     label: "{{ item.path }}"
-   when:
-     - item.state == 'file'
-   tags:
-     - nginx
+- name: "Deployer - Nginx - Configure - Generating & Transferring Files"
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '~/data/nginx/{{ item.path }}'
+  with_filetree: './files/nginx/'
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - item.state == 'file'
+  tags:
+    - nginx
 
- - name: "Deployer - Nginx - Pull Image"
-   containers.podman.podman_image:
-     name: docker.io/library/nginx
-     tag: latest
-     force: true
-   register: deployerTask3
+- name: "Deployer - Nginx - Pull Image"
+  containers.podman.podman_image:
+    name: docker.io/library/nginx
+    tag: latest
+    force: true
+  register: deployerTask3
 
 - name: "Deployer - Nginx - Run Container"
   containers.podman.podman_container:
