@@ -1,4 +1,37 @@
 ---
+- name: "Init : Python 3 : Install"
+  ansible.builtin.raw: apt install -y python3 python3-pip python3-setuptools python3-venv python3-dev
+  register: task
+  changed_when:
+    - "task.stdout.find('0 upgraded, 0 newly installed, 0 to remove') == -1"
+
+- name: "Init: Python 3 : Libraries - APT"
+  ansible.builtin.raw: apt install -y python3-apt
+  register: task
+  changed_when:
+    - "task.stdout.find('0 upgraded, 0 newly installed, 0 to remove') == -1"
+
+- name: "Init : Python 3 : Configure - Virtual Environment : Test"
+  ansible.builtin.raw: "/opt/ansible/bin/pip3"
+  register: task632
+  changed_when: false
+  failed_when: false
+
+- name: "Init : Python 3 : Configure - Virtual Environment : Delete"
+  ansible.builtin.file:
+    path: "/opt/ansible"
+    state: absent
+  when:
+    - "task632.stdout.find(\"ModuleNotFoundError: No module named 'pip'\") != -1"
+
+- name: "Init : Python 3 : Configure - Virtual Environment : Create"
+  ansible.builtin.pip:
+    name: pip
+    state: latest
+    extra_args: --upgrade
+    virtualenv: /opt/ansible
+    virtualenv_command: "python3 -m venv"
+
 - name: "Installer : Tools : Install"
   ansible.builtin.apt:
     name: "{{ package }}"
