@@ -23,6 +23,9 @@ exit 1
 
 }
 
+apt update
+apt-get install -y python3-pip python3-venv jq git curl lsb-release
+
 mkdir -p ~/.ssh/keys/pvjjk-1vos-tjas &> /dev/null
 if [[ ! -f ~/.ssh/keys/pvjjk-1vos-tjas/infra ]]
 then
