@@ -1,0 +1,31 @@
+---
+- name: "Tasks"
+  hosts: all
+  module_defaults:
+    ansible.builtin.gather_facts:
+        gather_timeout: 10
+
+  tasks:
+    - name: "Installer"
+      import_tasks: tasks/installer.yml
+      vars:
+        ansible_python_interpreter: "{{ ansible_facts.user_dir }}/.venv/ansible/bin/python3"
+      tags:
+        - installer
+        - never
+
+    - name: "Maintenance"
+      import_tasks: tasks/maintenance.yml
+      vars:
+        ansible_python_interpreter: "{{ ansible_facts.user_dir }}/.venv/ansible/bin/python3"
+      tags:
+        - maintenance
+        - never
+
+    - name: "Deployer"
+      import_tasks: tasks/deployer.yml
+      vars:
+        ansible_python_interpreter: "{{ ansible_facts.user_dir }}/.venv/ansible/bin/python3"
+      tags:
+        - deployer
+        - never
