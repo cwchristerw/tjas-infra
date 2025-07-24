@@ -11,138 +11,138 @@
   changed_when:
     - "task.stdout.find('0 upgraded, 0 newly installed, 0 to remove') == -1"
 
-- name: "Init : Python 3 : Configure - Virtual Environment : Test"
-  ansible.builtin.raw: "~/.venv/ansible/bin/pip3"
-  register: task632
-  changed_when: false
-  failed_when: false
+#- name: "Init : Python 3 : Configure - Virtual Environment : Test"
+#  ansible.builtin.raw: "~/.venv/ansible/bin/pip3"
+#  register: task632
+#  changed_when: false
+#  failed_when: false
 
-- name: "Init : Python 3 : Configure - Virtual Environment : Delete"
-  ansible.builtin.file:
-    path: "~/.venv/ansible"
-    state: absent
-  when:
-    - "task632.stdout.find(\"ModuleNotFoundError: No module named 'pip'\") != -1"
+#- name: "Init : Python 3 : Configure - Virtual Environment : Delete"
+#  ansible.builtin.file:
+#    path: "~/.venv/ansible"
+#    state: absent
+#  when:
+#    - "task632.stdout.find(\"ModuleNotFoundError: No module named 'pip'\") != -1"
 
-- name: "Init : Python 3 : Configure - Virtual Environment : Create"
-  ansible.builtin.pip:
-    name: pip
-    state: latest
-    extra_args: --upgrade
-    virtualenv: ~/.venv/ansible
-    virtualenv_command: "python3 -m venv"
+#- name: "Init : Python 3 : Configure - Virtual Environment : Create"
+#  ansible.builtin.pip:
+#    name: pip
+#    state: latest
+#    extra_args: --upgrade
+#    virtualenv: ~/.venv/ansible
+#    virtualenv_command: "python3 -m venv"
 
-- name: "Installer : Tools : Install"
-  ansible.builtin.apt:
-    name: "{{ package }}"
-    state: latest
-  vars:
-    packages:
-      - git
-      - rsync
-      - unzip
-      - nano
-      - tar
-      - gnupg
-      - screen
-      - jq
-      - sudo
-      - pkg-config
-      - etckeeper
-  loop: "{{ packages }}"
-  loop_control:
-    label: "{{ package }}"
-    loop_var: "package"
+# - name: "Installer : Tools : Install"
+#   ansible.builtin.apt:
+#     name: "{{ package }}"
+#     state: latest
+#   vars:
+#     packages:
+#       - git
+#       - rsync
+#       - unzip
+#       - nano
+#       - tar
+#       - gnupg
+#       - screen
+#       - jq
+#       - sudo
+#       - pkg-config
+#       - etckeeper
+#   loop: "{{ packages }}"
+#   loop_control:
+#     label: "{{ package }}"
+#     loop_var: "package"
 
-- name: "Installer : FirewallD : Dependencies - Packages"
-  ansible.builtin.apt:
-    name:
-      - python3-firewall
-      - iptables
-    state: latest
+# - name: "Installer : FirewallD : Dependencies - Packages"
+#   ansible.builtin.apt:
+#     name:
+#       - python3-firewall
+#       - iptables
+#     state: latest
 
-- name: "Installer : FirewallD : Install"
-  ansible.builtin.apt:
-    name: "firewalld"
-    state: latest
+# - name: "Installer : FirewallD : Install"
+#   ansible.builtin.apt:
+#     name: "firewalld"
+#     state: latest
 
-- name: "Installer : FirewallD : Start"
-  ansible.builtin.systemd_service:
-    name: firewalld
-    state: started
-    enabled: true
+# - name: "Installer : FirewallD : Start"
+#   ansible.builtin.systemd_service:
+#     name: firewalld
+#     state: started
+#     enabled: true
 
-- name: "Installer - Ansible - Python Library"
-  ansible.builtin.pip:
-    name: ansible
-    state: latest
-    extra_args: --upgrade
-    virtualenv: ~/.venv/ansible
-    virtualenv_command: "python3 -m venv"
-  tags:
-    - ansible
+# - name: "Installer - Ansible - Python Library"
+#   ansible.builtin.pip:
+#     name: ansible
+#     state: latest
+#     extra_args: --upgrade
+#     virtualenv: ~/.venv/ansible
+#     virtualenv_command: "python3 -m venv"
+#   tags:
+#     - ansible
 
-- name: "Installer : Ansible : Create Folder"
-  ansible.builtin.file:
-    path: ~/bin
-    state: directory
-  tags:
-    - ansible
+# - name: "Installer : Ansible : Create Folder"
+#   ansible.builtin.file:
+#     path: ~/bin
+#     state: directory
+#   tags:
+#     - ansible
 
-- name: "Installer : Ansible : Create Symbolic Links"
-  ansible.builtin.file:
-    src: ~/.venv/ansible/bin/{{ binary }}
-    dest: ~/bin/{{ binary }}
-    state: link
-  vars:
-    binaries:
-      - ansible
-      - ansible-community
-      - ansible-config
-      - ansible-console
-      - ansible-doc
-      - ansible-galaxy
-      - ansible-inventory
-      - ansible-playbook
-      - ansible-pull
-      - ansible-test
-      - ansible-vault
-  loop: "{{ binaries }}"
-  loop_control:
-    label: "{{ binary }}"
-    loop_var: "binary"
-  tags:
-    - ansible
+# - name: "Installer : Ansible : Create Symbolic Links"
+#   ansible.builtin.file:
+#     src: ~/.venv/ansible/bin/{{ binary }}
+#     dest: ~/bin/{{ binary }}
+#     state: link
+#   vars:
+#     binaries:
+#       - ansible
+#       - ansible-community
+#       - ansible-config
+#       - ansible-console
+#       - ansible-doc
+#       - ansible-galaxy
+#       - ansible-inventory
+#       - ansible-playbook
+#       - ansible-pull
+#       - ansible-test
+#       - ansible-vault
+#   loop: "{{ binaries }}"
+#   loop_control:
+#     label: "{{ binary }}"
+#     loop_var: "binary"
+#   tags:
+#     - ansible
 
-- name: "Installer - Ansible - Dependencies / Python Libraries"
-  ansible.builtin.pip:
-    name: "{{ library }}"
-    state: latest
-    extra_args: --upgrade
-    virtualenv: ~/.venv/ansible
-    virtualenv_command: "python3 -m venv"
-  vars:
-    libraries:
-      - cryptography
-      - dnspython
-      - hvac
-      - jmespath
-      - netaddr
-      - pexpect
-  loop: "{{ libraries }}"
-  loop_control:
-    label: "{{ library }}"
-    loop_var: "library"
+# - name: "Installer - Ansible - Dependencies / Python Libraries"
+#   ansible.builtin.pip:
+#     name: "{{ library }}"
+#     state: latest
+#     extra_args: --upgrade
+#     virtualenv: ~/.venv/ansible
+#     virtualenv_command: "python3 -m venv"
+#   vars:
+#     libraries:
+#       - cryptography
+#       - dnspython
+#       - hvac
+#       - jmespath
+#       - netaddr
+#       - pexpect
+#   loop: "{{ libraries }}"
+#   loop_control:
+#     label: "{{ library }}"
+#     loop_var: "library"
 
-- name: "Installer : MariaDB : Dependencies / Python Library : pymysql"
-  ansible.builtin.pip:
-    name: pymysql
-    state: latest
-    extra_args: --upgrade
-    virtualenv: ~/.venv/ansible
-    virtualenv_command: "python3 -m venv"
-  tags:
-    - mariadb
+# - name: "Installer : MariaDB : Dependencies / Python Library : pymysql"
+#   ansible.builtin.pip:
+#     name: pymysql
+#     state: latest
+#     extra_args: --upgrade
+#     virtualenv: ~/.venv/ansible
+#     virtualenv_command: "python3 -m venv"
+#   tags:
+#     - mariadb
 
 - name: "Installer : Schedule : Maintenance"
   ansible.builtin.cron:
