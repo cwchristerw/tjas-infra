@@ -144,6 +144,22 @@
   tags:
     - mariadb
 
+- name: "Installer : Podman : Install"
+  ansible.builtin.apt:
+    name:
+      - podman
+      - podman-compose
+      - netavark
+      - buildah
+      - slirp4netns
+    state: latest
+
+- name: "Installer : FirewallD : Start"
+  ansible.builtin.systemd_service:
+    name: firewalld
+    state: started
+    enabled: true
+
 - name: "Installer : Schedule : Maintenance"
   ansible.builtin.cron:
     name: "PVJJK 1.VOS TJAS - Infra - Maintenance"
