@@ -1,6 +1,6 @@
 ---
 - name: "Deployer - SSH - Add Authorized Keys"
-  ansible.builtin.file:
+  ansible.builtin.template:
     src: './files/ssh/authorized_keys'
     dest: '~/.ssh/authorized_keys'
   tags:
