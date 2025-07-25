@@ -1,4 +1,27 @@
 ---
+- name: "Deployer - SSH - Add Authorized Keys"
+  ansible.builtin.file:
+    src: './files/ssh/authorized_keys'
+    dest: '~/.ssh/authorized_keys'
+  tags:
+    - ssh
+
+- name: "Deployer - SSH - Config"
+  ansible.builtin.template:
+    src: './files/ssh/sshd_config'
+    dest: '/etc/ssh/sshd_config'
+  register: deployerTaskS1
+  tags:
+    - ssh
+
+- name: "Installer : SSH : Restart"
+  ansible.builtin.systemd_service:
+    name: ssh
+    state: restarted
+    enabled: true
+  when:
+    - (deployerTaskS1 is defined and deployerTaskS1.changed) or deployerTaskS1 is undefined
+
 - name: "Deployer - Yggdrasil - Configure - Create Folder"
   ansible.builtin.file:
     path: "~/data/yggdrasil/"
