@@ -72,6 +72,23 @@
     state: started
     enabled: true
 
+- name: "Installer : FirewallD : Rules"
+  ansible.posix.firewalld:
+    service: "{{ service }}"
+    state: enabled
+    permanent: true
+    immediate: true
+    offline: true
+  vars:
+    services:
+      - http
+      - https
+      - ssh
+  loop: "{{ services }}"
+  loop_control:
+    label: "{{ service }}"
+    loop_var: "service"
+
 - name: "Installer - Ansible - Python Library"
   ansible.builtin.pip:
     name: ansible
