@@ -14,7 +14,7 @@
   tags:
     - ssh
 
-- name: "Installer : SSH : Restart"
+- name: "Deployer : SSH : Restart"
   ansible.builtin.systemd_service:
     name: ssh
     state: restarted
@@ -95,6 +95,169 @@
     - (deployerTaskY1 is defined and deployerTaskY1.changed) or deployerTaskY1 is undefined or (deployerTaskY2 is defined and deployerTaskY2.changed) or deployerTaskY2 is undefined or (deployerTaskY3 is defined and deployerTaskY3.changed) or deployerTaskY3 is undefined or (deployerTaskY4 is defined and deployerTaskY4.changed) or deployerTaskY4 is undefined
   tags:
     - yggdrasil
+
+# - name: "Deployer - DHCP - Install"
+#   ansible.builtin.apt:
+#     name:
+#       - isc-dhcp-server
+#     state: latest
+
+# - name: "Deployer - DHCP - Config"
+#   ansible.builtin.template:
+#     src: './files/dhcp/dhcpd.conf'
+#     dest: '/etc/dhcp/dhcpd.conf'
+#   register: deployerTaskD1
+#   tags:
+#     - dhcp
+
+# - name: "Deployer : DHCP : Restart"
+#   ansible.builtin.systemd_service:
+#     name: isc-dhcp-server
+#     state: restarted
+#     enabled: true
+#   when:
+#     - (deployerTaskD1 is defined and deployerTaskD1.changed) or deployerTaskD1 is undefined
+
+- name: "Deployer - MariaDB - Create Folder"
+  ansible.builtin.file:
+    path: ~/data/mariadb
+    state: directory
+  tags:
+    - mariadb
+
+- name: "Deployer - MariaDB - Pull Image"
+  containers.podman.podman_image:
+    name: docker.io/library/mariadb
+    tag: latest
+    force: true
+  register: deployerTaskM1
+
+- name: "Deployer - MariaDB - Run Container"
+  containers.podman.podman_container:
+    name: mariadb
+    image: docker.io/library/mariadb:latest
+    state: started
+    restart: on
+    network: host
+    volumes:
+      - "~/data/mariadb:/var/lib/mysql"
+    restart_policy: always
+    env:
+      MYSQL_ROOT_PASSWORD: "{{ config.databases.mariadb.users.root.password }}"
+  register: deployerTaskM2
+  when:
+    - (deployerTaskM1 is defined and deployerTaskM1.changed) or deployerTaskM1 is undefined
+  tags:
+    - mariadb
+
+- name: "Deployer - MariaDB - Wait"
+  ansible.builtin.wait_for:
+    host: "127.0.0.1"
+    port: "3306"
+    delay: 10
+  when:
+    - (deployerTaskM2 is defined and deployerTaskM2.changed) or deployerTaskM2 is undefined
+  tags:
+    - mariadb
+
+- name: "Deployer - MariaDB - Upgrade"
+  containers.podman.podman_container_exec:
+    name: "mariadb"
+    command: "mariadb-upgrade --host=127.0.0.1 --user=root --password={{ config.mariadb.users.root.password }}"
+  register: task
+  ignore_errors: yes
+  changed_when: task.stdout.find("This installation of MariaDB is already upgraded") == -1
+  when:
+    - (deployerTaskM2 is defined and deployerTaskM2.changed) or deployerTaskM2 is undefined
+  tags:
+    - mariadb
+
+- name: "Deployer - MariaDB - Create Users"
+  community.mysql.mysql_user:
+    login_host: "127.0.0.1"
+    login_user: root
+    login_password: "{{ config.mariadb.users.root.password }}"
+    name: "{{ config.mariadb.users[user].username }}"
+    host: "%"
+    password: "{{ config.mariadb.users[user].password }}"
+    priv: "{{ config.mariadb.users[user].database }}.*:ALL"
+  loop: "{{ config.mariadb.users.keys() }}"
+  loop_control:
+    label: "{{ user }}"
+    loop_var: "user"
+  when:
+    - (deployerTaskM2 is defined and deployerTaskM2.changed) or deployerTaskM2 is undefined
+  tags:
+    - mariadb
+
+- name: "Deployer - MariaDB - Create Database"
+  community.mysql.mysql_db:
+    login_host: "127.0.0.1"
+    login_user: "{{ config.mariadb.users[user].username }}"
+    login_password: "{{ config.mariadb.users[user].password }}"
+    name: "{{ config.mariadb.users[user].database }}"
+  loop: "{{ config.mariadb.users.keys() }}"
+  loop_control:
+    label: "{{ user }}"
+    loop_var: "user"
+  when:
+    - (deployerTaskM2 is defined and deployerTaskM2.changed) or deployerTaskM2 is undefined
+  tags:
+    - mariadb
+
+- name: "Deployer - PowerDNS - Configure - Create Folder"
+  ansible.builtin.file:
+    path: "~/data/powerdns/"
+    state: directory
+  tags:
+    - powerdns
+
+- name: "Deployer - PowerDNS - Configure - Create Subfolders"
+  ansible.builtin.file:
+    dest: '~/data/powerdns/{{ item.path }}'
+    state: directory
+  with_filetree: './files/powerdns/'
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - item.state == 'directory'
+  tags:
+    - powerdns
+
+- name: "Deployer - PowerDNS - Configure - Generating & Transferring Files"
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '~/data/powerdns/{{ item.path }}'
+  register: deployerTaskP1
+  with_filetree: './files/powerdns/'
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - item.state == 'file'
+  tags:
+    - powerdns
+
+- name: "Deployer - PowerDNS - Pull Image"
+  containers.podman.podman_image:
+    name: docker.io/powerdns/pdns-auth-49
+    tag: latest
+    force: true
+  register: deployerTaskP2
+
+- name: "Deployer - PowerDNS - Run Container"
+  containers.podman.podman_container:
+    name: powerdns
+    image: docker.io/powerdns/pdns-auth-49:latest
+    state: started
+    recreate: on
+    network: host
+    restart_policy: always
+    volumes:
+      - "~/data/powerdns/config.conf:/etc/powerdns/pdns.conf:ro"
+  when:
+    - (deployerTaskP1 is defined and deployerTaskP1.changed) or deployerTaskP1 is undefined or (deployerTaskP2 is defined and deployerTaskP2.changed) or deployerTaskP2 is undefined
+  tags:
+    - powerdns
 
 - name: "Deployer - Nginx - Configure - Create Folder"
   ansible.builtin.file:
