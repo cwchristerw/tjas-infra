@@ -38,7 +38,7 @@ python3 -m venv ~/.venv/ansible
 
 ~/.venv/ansible/bin/ansible-galaxy collection install ansible.posix containers.podman --upgrade
 
-~/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d ~/.ansible/pull/pvjjk-1vos-tjas/infra --accept-host-key --private-key ~/.ssh/keys/pvjjk-1vos-tjas/infra --vault-password-file ~/.ansible/vault/pvjjk-1vos-tjas.yml tasks.yml -t installer
+~/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d ~/.ansible/pull/pvjjk-1vos-tjas/infra --accept-host-key --private-key ~/.ssh/keys/pvjjk-1vos-tjas/infra --vault-password-file ~/.ansible/vault/pvjjk-1vos-tjas tasks.yml -t installer
 
 echo "
 ==============================
