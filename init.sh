@@ -63,6 +63,19 @@ ti-header "Näytetään SSH-avain Infra-repon käyttöön..."
 cat ~/.ssh/keys/pvjjk-1vos-tjas/infra.pub
 echo -e "\n\n"
 
+if [[ ! -f ~/.ansible/vault/pvjjk-1vos-tjas ]]
+then
+    ti-header "Syötä Ansible Vaultin salasana..."
+    echo -n "Salasana: "
+    read VAULT_PASSWORD
+    echo -e "\n\n"
+
+    if [[ ! -z $VAULT_PASSWORD ]]
+    then
+        echo "$VAULT_PASSWORD" > ~/.ansible/vault/pvjjk-1vos-tjas
+    fi
+fi
+
 ti-header "Suoritetaan Infran asennus..."
 ~/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d ~/.ansible/pull/pvjjk-1vos-tjas/infra --accept-host-key --private-key ~/.ssh/keys/pvjjk-1vos-tjas/infra --vault-password-file ~/.ansible/vault/pvjjk-1vos-tjas tasks.yml -t installer
 echo -e "\n\n"
