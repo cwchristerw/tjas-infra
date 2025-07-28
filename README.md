@@ -1,5 +1,5 @@
 # Tietojärjestelmäasentajien Infra
-## PVJJK 1.VOS Infra
+## PVJJK 1.VOS TJAS - Infra
 
 Infran toteutus aloitettiin vuonna 2025 ja sen on suunnitellut [Jääkäri Warén](https://christerwaren.fi).
 
