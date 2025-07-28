@@ -67,13 +67,16 @@ if [[ ! -f ~/.ansible/vault/pvjjk-1vos-tjas ]]
 then
     ti-header "Syötä Ansible Vaultin salasana..."
     echo -n "Salasana: "
-    read VAULT_PASSWORD
-    echo -e "\n\n"
+    while [[ -z $VAULT_PASSWORD ]]
+    do
+        read VAULT_PASSWORD
 
-    if [[ ! -z $VAULT_PASSWORD ]]
-    then
-        echo "$VAULT_PASSWORD" > ~/.ansible/vault/pvjjk-1vos-tjas
-    fi
+        if [[ ! -z $VAULT_PASSWORD ]]
+        then
+            echo "$VAULT_PASSWORD" > ~/.ansible/vault/pvjjk-1vos-tjas
+        fi
+    done
+    echo -e "\n\n"
 fi
 
 ti-header "Suoritetaan Infran asennus..."
