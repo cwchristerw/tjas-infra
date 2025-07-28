@@ -35,7 +35,7 @@ mkdir -p ~/.ssh/keys/pvjjk-1vos-tjas &> /dev/null
 if [[ ! -f ~/.ssh/keys/pvjjk-1vos-tjas/infra ]]
 then
     echo "Generoidaan SSH-avain Infra-repon käyttöön..."
-    ssh-keygen -f ~/.ssh/keys/pvjjk-1vos-tjas/infra -t ed25519 -N ''
+    ssh-keygen -f ~/.ssh/keys/pvjjk-1vos-tjas/infra -t ed25519 -N '' -C $(hostname --fqdn)
     echo -e "\n\n"
 fi
 
