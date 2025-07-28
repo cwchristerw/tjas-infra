@@ -49,6 +49,7 @@
       - sudo
       - pkg-config
       - etckeeper
+      - picocom
   loop: "{{ packages }}"
   loop_control:
     label: "{{ package }}"
