@@ -69,6 +69,7 @@ do
 done
 echo -e "\n\n"
 
+mkdir -p ~/.ansible/vault &> /dev/null
 if [[ ! -f ~/.ansible/vault/pvjjk-1vos-tjas ]]
 then
     ti-header "Syötä Ansible Vaultin salasana..."
