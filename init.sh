@@ -59,8 +59,14 @@ ti-header "Asennetaan Ansible kokoelmat..."
 ~/.venv/ansible/bin/ansible-galaxy collection install ansible.posix containers.podman --upgrade
 echo -e "\n\n"
 
-ti-header "Näytetään SSH-avain Infra-repon käyttöön..."
+ti-header "Lisää SSH-avain Infra-repon käyttöön..."
 cat ~/.ssh/keys/pvjjk-1vos-tjas/infra.pub
+
+echo -n "Onko avain lisätty Github-repoon? [K/E]"
+while [[ -z $SSHKEY_QUESTION || ! -z $SSHKEY_QUESTION && $SSHKEY_QUESTION != "K" ]]
+do
+    read SSHKEY_QUESTION
+done
 echo -e "\n\n"
 
 if [[ ! -f ~/.ansible/vault/pvjjk-1vos-tjas ]]
