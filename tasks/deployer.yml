@@ -143,7 +143,7 @@
       - "~/data/mariadb:/var/lib/mysql"
     restart_policy: always
     env:
-      MYSQL_ROOT_PASSWORD: "{{ config.databases.mariadb.users.root.password }}"
+      MYSQL_ROOT_PASSWORD: "{{ config.mariadb.users.root.password }}"
   register: deployerTaskM2
   when:
     - (deployerTaskM1 is defined and deployerTaskM1.changed) or deployerTaskM1 is undefined
