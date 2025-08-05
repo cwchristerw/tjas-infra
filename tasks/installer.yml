@@ -55,6 +55,11 @@
     label: "{{ package }}"
     loop_var: "package"
 
+- name: "Installer : Network : Configure"
+  ansible.builtin.template:
+    src: './files/network/interfaces'
+    dest: '/etc/network/interfaces'
+
 - name: "Installer : FirewallD : Dependencies - Packages"
   ansible.builtin.apt:
     name:
@@ -89,6 +94,8 @@
   loop_control:
     label: "{{ service }}"
     loop_var: "service"
+
+
 
 - name: "Installer - Ansible - Python Library"
   ansible.builtin.pip:
