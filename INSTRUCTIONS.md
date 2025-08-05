@@ -139,6 +139,7 @@ vlan 30
    exit
 vlan 69
    name "SIVE"
+   ip address 192.168.69.11 255.255.255.0
    tagged 1,2,3
    exit
 ip authorized-managers 192.168.69.20
