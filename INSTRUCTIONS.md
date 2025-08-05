@@ -107,32 +107,36 @@ end
 
 s1.net.tjas
 ```
-   ip address dhcp-bootp
-   exit
-vlan 10
-   name "VLAN10"
-   ip address 192.168.1.2 255.255.255.0
-   tagged 1
-   exit
-vlan 20
-   name "VLAN20"
-   ip address 192.168.2.2 255.255.255.0
-   tagged 1-2
-   exit
-vlan 30
-   name "VLAN30"
-   ip address 192.168.3.2 255.255.255.0
-   tagged 1,3
-   exit
-ip authorized-managers 192.168.2.10 255.255.255.255
+hostname "s1.net.tjas" 
+snmp-server community "public" Unrestricted 
+vlan 1 
+   name "DEFAULT_VLAN"
+   untagged 1-52 
+   ip address dhcp-bootp 
+   exit 
+vlan 10 
+   name "VLAN10" 
+   ip address 192.168.1.2 255.255.255.0 
+   tagged 1 
+   exit 
+vlan 20 
+   name "VLAN20" 
+   ip address 192.168.2.2 255.255.255.0 
+   tagged 1-2 
+   exit 
+vlan 30 
+   name "VLAN30" 
+   ip address 192.168.3.2 255.255.255.0 
+   tagged 1,3 
+   exit 
+ip authorized-managers 192.168.2.10 
 ip ssh
 password manager
+
 ```
 
 s2.net.tjas
 ```
-; J9085A Configuration Editor; Created on release #R.11.30
-
 hostname "s2.net.tjas"
 ip routing
 snmp-server community "public" Unrestricted
@@ -156,8 +160,6 @@ password manager
 
 s3.net.tjas
 ```
-; J9085A Configuration Editor; Created on release #R.11.22
-
 hostname "s3.net.tjas"
 snmp-server community "public" Unrestricted
 vlan 1
