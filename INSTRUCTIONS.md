@@ -14,11 +14,11 @@
 
 r1.net.tjas
 ```
-!
 version 12.4
 service timestamps debug datetime msec
 service timestamps log datetime msec
 no service password-encryption
+!
 !
 hostname r1.net.tjas
 !
@@ -61,28 +61,28 @@ interface FastEthernet0/1
 interface FastEthernet0/1.10
  description "TINU - INTERNET"
  encapsulation dot1Q 10
- ip address 192.168.1.1 255.255.255.0
+ ip address 192.168.1.1 255.255.255.224
  ip helper-address 192.168.2.10
  no snmp trap link-status
 !
 interface FastEthernet0/1.20
  description "JUVA - INTRA"
  encapsulation dot1Q 20
- ip address 192.168.2.1 255.255.255.0
+ ip address 192.168.2.1 255.255.255.224
  ip helper-address 192.168.2.10
  no snmp trap link-status
 !
 interface FastEthernet0/1.30
  description "AITO - TOIMISTO"
  encapsulation dot1Q 30
- ip address 192.168.3.1 255.255.255.0
+ ip address 192.168.3.1 255.255.255.224
  ip helper-address 192.168.2.10
  no snmp trap link-status
 !
 interface FastEthernet0/1.69
  description "SIVE - HALLINTA"
  encapsulation dot1Q 69
- ip address 192.168.69.1 255.255.255.0
+ ip address 192.168.69.1 255.255.255.192
  ip helper-address 192.168.69.20
  no snmp trap link-status
 !
@@ -95,11 +95,6 @@ ip classless
 !
 ip http server
 !
-access-list 1 permit 192.168.0.0
-access-list 1 permit 192.168.1.0
-access-list 1 permit 192.168.2.0
-access-list 1 permit 192.168.3.0
-access-list 1 deny   any
 !
 control-plane
 !
@@ -126,26 +121,27 @@ vlan 1
    exit
 vlan 10
    name "TINU"
-   ip address 192.168.1.2 255.255.255.0
+   ip address 192.168.1.2 255.255.255.224
    tagged 1
    exit
 vlan 20
    name "JUVA"
+   no ip address
    tagged 1-2
    exit
 vlan 30
    name "AITO"
+   no ip address
    tagged 1,3
    exit
 vlan 69
    name "SIVE"
-   ip address 192.168.69.11 255.255.255.0
-   tagged 1,2,3
+   ip address 192.168.69.11 255.255.255.192
+   tagged 1-3
    exit
-ip authorized-managers 192.168.69.20
+ip authorized-managers 192.168.69.20 255.255.255.255
 ip ssh
 password manager
-
 ```
 
 s2.net.tjas
@@ -161,13 +157,13 @@ vlan 1
 vlan 20
    name "JUVA"
    untagged 2-24
-   ip address 192.168.2.2 255.255.255.0
-   tagged 1
+   ip address 192.168.2.2 255.255.255.224
+   tagged 1-2
    exit
 vlan 69
    name "SIVE"
-   ip address 192.168.69.12 255.255.255.0
-   tagged 1,2
+   ip address 192.168.69.12 255.255.255.192
+   tagged 1-2
    exit
 ip authorized-managers 192.168.69.20 255.255.255.255
 ip ssh
@@ -186,14 +182,14 @@ vlan 1
    exit
 vlan 30
    name "AITO"
-   untagged 2-24
-   ip address 192.168.3.2 255.255.255.0
-   tagged 1
+   ip address 192.168.3.2 255.255.255.224
+   tagged 1,13-24
+   untagged
    exit
 vlan 69
    name "SIVE"
    untagged 2-24
-   ip address 192.168.69.13 255.255.255.0
+   ip address 192.168.69.13 255.255.255.192
    tagged 1
    exit
 ip authorized-managers 192.168.69.20 255.255.255.255
