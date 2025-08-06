@@ -35,32 +35,32 @@ ti-header "Asennetaan PVJJK 1.VOS TJAS Infran riippuvuudet APT-paketinhallinnall
 apt-get install -y python3-pip python3-venv jq git curl lsb-release
 echo -e "\n\n"
 
-mkdir -p ~/.ssh/keys/pvjjk-1vos-tjas &> /dev/null
-if [[ ! -f ~/.ssh/keys/pvjjk-1vos-tjas/infra ]]
+mkdir -p /root/.ssh/keys/pvjjk-1vos-tjas &> /dev/null
+if [[ ! -f /root/.ssh/keys/pvjjk-1vos-tjas/infra ]]
 then
     ti-header "Generoidaan SSH-avain Infra-repon käyttöön..."
-    ssh-keygen -f ~/.ssh/keys/pvjjk-1vos-tjas/infra -t ed25519 -N '' -C $(hostname --fqdn)
+    ssh-keygen -f /root/.ssh/keys/pvjjk-1vos-tjas/infra -t ed25519 -N '' -C $(hostname --fqdn)
     echo -e "\n\n"
 fi
 
 ti-header "Luodaan Ansiblelle virtuaalinen ympäristö..."
-python3 -m venv ~/.venv/ansible
+python3 -m venv /root/.venv/ansible
 echo -e "\n\n"
 
 ti-header "Asennetaan Ansiblen riippuvuudet..."
-~/.venv/ansible/bin/pip3 install cryptography dnspython hvac jmespath netaddr pexpect
+/root/.venv/ansible/bin/pip3 install cryptography dnspython hvac jmespath netaddr pexpect
 echo -e "\n\n"
 
 ti-header "Asennetaan Ansible..."
-~/.venv/ansible/bin/pip3 install ansible
+/root/.venv/ansible/bin/pip3 install ansible
 echo -e "\n\n"
 
 ti-header "Asennetaan Ansible kokoelmat..."
-~/.venv/ansible/bin/ansible-galaxy collection install ansible.posix containers.podman --upgrade
+/root/.venv/ansible/bin/ansible-galaxy collection install ansible.posix containers.podman --upgrade
 echo -e "\n\n"
 
 ti-header "Lisää SSH-avain Infra-repon käyttöön..."
-cat ~/.ssh/keys/pvjjk-1vos-tjas/infra.pub
+cat /root/.ssh/keys/pvjjk-1vos-tjas/infra.pub
 
 echo -n "Onko avain lisätty Github-repoon? [K/E]"
 while [[ -z $SSHKEY_QUESTION || ! -z $SSHKEY_QUESTION && $SSHKEY_QUESTION != "K" ]]
@@ -69,8 +69,8 @@ do
 done
 echo -e "\n\n"
 
-mkdir -p ~/.ansible/vault &> /dev/null
-if [[ ! -f ~/.ansible/vault/pvjjk-1vos-tjas ]]
+mkdir -p /root/.ansible/vault &> /dev/null
+if [[ ! -f /root/.ansible/vault/pvjjk-1vos-tjas ]]
 then
     ti-header "Syötä Ansible Vaultin salasana..."
     echo -n "Salasana: "
@@ -80,14 +80,14 @@ then
 
         if [[ ! -z $VAULT_PASSWORD ]]
         then
-            echo "$VAULT_PASSWORD" > ~/.ansible/vault/pvjjk-1vos-tjas
+            echo "$VAULT_PASSWORD" > /root/.ansible/vault/pvjjk-1vos-tjas
         fi
     done
     echo -e "\n\n"
 fi
 
 ti-header "Suoritetaan Infran asennus..."
-~/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d ~/.ansible/pull/pvjjk-1vos-tjas/infra --accept-host-key --private-key ~/.ssh/keys/pvjjk-1vos-tjas/infra --vault-password-file ~/.ansible/vault/pvjjk-1vos-tjas tasks.yml -t installer
+/root/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/pvjjk-1vos-tjas/infra --accept-host-key --private-key /root/.ssh/keys/pvjjk-1vos-tjas/infra --vault-password-file /root/.ansible/vault/pvjjk-1vos-tjas tasks.yml -t installer
 echo -e "\n\n"
 
 echo "

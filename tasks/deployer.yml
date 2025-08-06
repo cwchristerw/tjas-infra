@@ -2,7 +2,7 @@
 - name: "Deployer - SSH - Add Authorized Keys"
   ansible.builtin.template:
     src: './files/ssh/authorized_keys'
-    dest: '~/.ssh/authorized_keys'
+    dest: '/root/.ssh/authorized_keys'
   tags:
     - ssh
 
@@ -24,14 +24,14 @@
 
 - name: "Deployer - Yggdrasil - Configure - Create Folder"
   ansible.builtin.file:
-    path: "~/data/yggdrasil/"
+    path: "/root/data/yggdrasil/"
     state: directory
   tags:
     - yggdrasil
 
 - name: "Deployer - Yggdrasil - Configure - Create Subfolders"
   ansible.builtin.file:
-    dest: '~/data/yggdrasil/{{ item.path }}'
+    dest: '/root/data/yggdrasil/{{ item.path }}'
     state: directory
   with_filetree: './files/yggdrasil/'
   loop_control:
@@ -44,7 +44,7 @@
 - name: "Deployer - Yggdrasil - Configure - Generating & Transferring Files"
   ansible.builtin.template:
     src: '{{ item.src }}'
-    dest: '~/data/yggdrasil/{{ item.path }}'
+    dest: '/root/data/yggdrasil/{{ item.path }}'
   register: deployerTaskY1
   with_filetree: './files/yggdrasil/'
   loop_control:
@@ -71,7 +71,7 @@
   containers.podman.podman_image:
     name: pvjjk-1vos-tjas/nginx
     tag: latest
-    path: "~/data/yggdrasil"
+    path: "/root/data/yggdrasil"
     build:
       format: docker
     force: true
@@ -120,7 +120,7 @@
 
 - name: "Deployer - MariaDB - Create Folder"
   ansible.builtin.file:
-    path: ~/data/mariadb
+    path: /root/data/mariadb
     state: directory
   tags:
     - mariadb
@@ -140,7 +140,7 @@
     restart: on
     network: host
     volumes:
-      - "~/data/mariadb:/var/lib/mysql"
+      - "/root/data/mariadb:/var/lib/mysql"
     restart_policy: always
     env:
       MYSQL_ROOT_PASSWORD: "{{ config.mariadb.users.root.password }}"
@@ -207,14 +207,14 @@
 
 - name: "Deployer - PowerDNS - Configure - Create Folder"
   ansible.builtin.file:
-    path: "~/data/powerdns/"
+    path: "/root/data/powerdns/"
     state: directory
   tags:
     - powerdns
 
 - name: "Deployer - PowerDNS - Configure - Create Subfolders"
   ansible.builtin.file:
-    dest: '~/data/powerdns/{{ item.path }}'
+    dest: '/root/data/powerdns/{{ item.path }}'
     state: directory
   with_filetree: './files/powerdns/'
   loop_control:
@@ -227,7 +227,7 @@
 - name: "Deployer - PowerDNS - Configure - Generating & Transferring Files"
   ansible.builtin.template:
     src: '{{ item.src }}'
-    dest: '~/data/powerdns/{{ item.path }}'
+    dest: '/root/data/powerdns/{{ item.path }}'
   register: deployerTaskP1
   with_filetree: './files/powerdns/'
   loop_control:
@@ -253,7 +253,7 @@
     network: host
     restart_policy: always
     volumes:
-      - "~/data/powerdns/config.conf:/etc/powerdns/pdns.conf:ro"
+      - /root/data/powerdns/config.conf:/etc/powerdns/pdns.conf:ro"
   when:
     - (deployerTaskP1 is defined and deployerTaskP1.changed) or deployerTaskP1 is undefined or (deployerTaskP2 is defined and deployerTaskP2.changed) or deployerTaskP2 is undefined
   tags:
@@ -261,14 +261,14 @@
 
 - name: "Deployer - Nginx - Configure - Create Folder"
   ansible.builtin.file:
-    path: "~/data/nginx/"
+    path: "/root/data/nginx/"
     state: directory
   tags:
     - nginx
 
 - name: "Deployer - Nginx - Configure - Create Subfolders"
   ansible.builtin.file:
-    dest: '~/data/nginx/{{ item.path }}'
+    dest: '/root/data/nginx/{{ item.path }}'
     state: directory
   with_filetree: './files/nginx/'
   loop_control:
@@ -281,7 +281,7 @@
 - name: "Deployer - Nginx - Configure - Generating & Transferring Files"
   ansible.builtin.template:
     src: '{{ item.src }}'
-    dest: '~/data/nginx/{{ item.path }}'
+    dest: '/root/data/nginx/{{ item.path }}'
   register: deployerTaskN1
   with_filetree: './files/nginx/'
   loop_control:

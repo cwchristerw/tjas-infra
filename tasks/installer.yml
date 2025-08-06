@@ -12,14 +12,14 @@
     - "task.stdout.find('0 upgraded, 0 newly installed, 0 to remove') == -1"
 
 - name: "Init : Python 3 : Configure - Virtual Environment : Test"
-  ansible.builtin.raw: "~/.venv/ansible/bin/pip3"
+  ansible.builtin.raw: "/root/.venv/ansible/bin/pip3"
   register: task632
   changed_when: false
   failed_when: false
 
 - name: "Init : Python 3 : Configure - Virtual Environment : Delete"
   ansible.builtin.file:
-    path: "~/.venv/ansible"
+    path: "/root/.venv/ansible"
     state: absent
   when:
     - "task632.stdout.find(\"ModuleNotFoundError: No module named 'pip'\") != -1"
@@ -29,7 +29,7 @@
     name: pip
     state: latest
     extra_args: --upgrade
-    virtualenv: ~/.venv/ansible
+    virtualenv: /root/.venv/ansible
     virtualenv_command: "python3 -m venv"
 
 - name: "Installer : Tools : Install"
@@ -102,22 +102,22 @@
     name: ansible
     state: latest
     extra_args: --upgrade
-    virtualenv: ~/.venv/ansible
+    virtualenv: /root/.venv/ansible
     virtualenv_command: "python3 -m venv"
   tags:
     - ansible
 
 - name: "Installer : Ansible : Create Folder"
   ansible.builtin.file:
-    path: ~/bin
+    path: /root/bin
     state: directory
   tags:
     - ansible
 
 - name: "Installer : Ansible : Create Symbolic Links"
   ansible.builtin.file:
-    src: ~/.venv/ansible/bin/{{ binary }}
-    dest: ~/bin/{{ binary }}
+    src: /root/.venv/ansible/bin/{{ binary }}
+    dest: /root/bin/{{ binary }}
     state: link
   vars:
     binaries:
@@ -144,7 +144,7 @@
     name: "{{ library }}"
     state: latest
     extra_args: --upgrade
-    virtualenv: ~/.venv/ansible
+    virtualenv: /root/.venv/ansible
     virtualenv_command: "python3 -m venv"
   vars:
     libraries:
@@ -164,7 +164,7 @@
     name: pymysql
     state: latest
     extra_args: --upgrade
-    virtualenv: ~/.venv/ansible
+    virtualenv: /root/.venv/ansible
     virtualenv_command: "python3 -m venv"
   tags:
     - mariadb
@@ -184,7 +184,7 @@
     name: "PVJJK 1.VOS TJAS - Infra - Maintenance"
     hour: "*/3"
     minute: "0"
-    job: "~/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d ~/.ansible/pull/pvjjk-1vos-tjas/infra --accept-host-key --private-key ~/.ssh/keys/pvjjk-1vos-tjas/infra --vault-password-file ~/.ansible/vault/pvjjk-1vos-tjas tasks.yml -t maintenance"
+    job: "/root/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/pvjjk-1vos-tjas/infra --accept-host-key --private-key /root/.ssh/keys/pvjjk-1vos-tjas/infra --vault-password-file /root/.ansible/vault/pvjjk-1vos-tjas tasks.yml -t maintenance"
   tags:
     - cron
 
@@ -192,6 +192,6 @@
   ansible.builtin.cron:
     name: "PVJJK 1.VOS TJAS - Infra - Deployer"
     minute: "*/5"
-    job: "~/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d ~/.ansible/pull/pvjjk-1vos-tjas/infra --accept-host-key --private-key ~/.ssh/keys/pvjjk-1vos-tjas/infra --vault-password-file ~/.ansible/vault/pvjjk-1vos-tjas tasks.yml -t deployer"
+    job: "/root/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/pvjjk-1vos-tjas/infra --accept-host-key --private-key /root/.ssh/keys/pvjjk-1vos-tjas/infra --vault-password-file /root/.ansible/vault/pvjjk-1vos-tjas tasks.yml -t deployer"
   tags:
     - cron
