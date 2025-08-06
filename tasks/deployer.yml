@@ -96,28 +96,6 @@
   tags:
     - yggdrasil
 
-# - name: "Deployer - DHCP - Install"
-#   ansible.builtin.apt:
-#     name:
-#       - isc-dhcp-server
-#     state: latest
-
-# - name: "Deployer - DHCP - Config"
-#   ansible.builtin.template:
-#     src: './files/dhcp/dhcpd.conf'
-#     dest: '/etc/dhcp/dhcpd.conf'
-#   register: deployerTaskD1
-#   tags:
-#     - dhcp
-
-# - name: "Deployer : DHCP : Restart"
-#   ansible.builtin.systemd_service:
-#     name: isc-dhcp-server
-#     state: restarted
-#     enabled: true
-#   when:
-#     - (deployerTaskD1 is defined and deployerTaskD1.changed) or deployerTaskD1 is undefined
-
 - name: "Deployer - MariaDB - Create Folder"
   ansible.builtin.file:
     path: /root/data/mariadb
@@ -204,6 +182,28 @@
     - (deployerTaskM2 is defined and deployerTaskM2.changed) or deployerTaskM2 is undefined
   tags:
     - mariadb
+
+- name: "Deployer - Kea - Install"
+  ansible.builtin.apt:
+    name:
+      - kea
+    state: latest
+
+# - name: "Deployer - DHCP - Config"
+#   ansible.builtin.template:
+#     src: './files/dhcp/dhcpd.conf'
+#     dest: '/etc/dhcp/dhcpd.conf'
+#   register: deployerTaskD1
+#   tags:
+#     - dhcp
+
+# - name: "Deployer : DHCP : Restart"
+#   ansible.builtin.systemd_service:
+#     name: isc-dhcp-server
+#     state: restarted
+#     enabled: true
+#   when:
+#     - (deployerTaskD1 is defined and deployerTaskD1.changed) or deployerTaskD1 is undefined
 
 - name: "Deployer - PowerDNS - Configure - Create Folder"
   ansible.builtin.file:
