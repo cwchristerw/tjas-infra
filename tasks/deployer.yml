@@ -58,7 +58,7 @@
   containers.podman.podman_image:
     name: docker.io/library/golang
     tag: alpine
-    force: true
+#    force: true
   register: deployerTaskY2
 
 - name: "Deployer - Yggdrasil - Clone Repository"
@@ -67,7 +67,7 @@
     dest: ".cache/git/yggdrasil"
   register: deployerTaskY3
 
-- name: "Deployer - Yggdrasil - Pull Image"
+- name: "Deployer - Yggdrasil - Build Image"
   containers.podman.podman_image:
     name: pvjjk-1vos-tjas/yggdrasil
     tag: latest
@@ -107,7 +107,7 @@
   containers.podman.podman_image:
     name: docker.io/library/mariadb
     tag: latest
-    force: true
+#    force: true
   register: deployerTaskM1
 
 - name: "Deployer - MariaDB - Run Container"
@@ -251,7 +251,7 @@
   containers.podman.podman_image:
     name: docker.io/powerdns/pdns-auth-49
     tag: latest
-    force: true
+#    force: true
   register: deployerTaskP2
 
 - name: "Deployer - PowerDNS - Run Container"
@@ -305,7 +305,7 @@
   containers.podman.podman_image:
     name: docker.io/library/nginx
     tag: latest
-    force: true
+#    force: true
   register: deployerTaskN2
 
 - name: "Deployer - Nginx - Run Container"
