@@ -253,7 +253,7 @@
     network: host
     restart_policy: always
     volumes:
-      - /root/data/powerdns/config.conf:/etc/powerdns/pdns.conf:ro"
+      - "/root/data/powerdns/config.conf:/etc/powerdns/pdns.conf:ro"
   when:
     - (deployerTaskP1 is defined and deployerTaskP1.changed) or deployerTaskP1 is undefined or (deployerTaskP2 is defined and deployerTaskP2.changed) or deployerTaskP2 is undefined
   tags:
