@@ -69,7 +69,7 @@
 
 - name: "Deployer - Yggdrasil - Pull Image"
   containers.podman.podman_image:
-    name: pvjjk-1vos-tjas/nginx
+    name: pvjjk-1vos-tjas/yggdrasil
     tag: latest
     path: "/root/data/yggdrasil"
     build:
@@ -80,7 +80,7 @@
 - name: "Deployer - Yggdrasil - Run Container"
   containers.podman.podman_container:
     name: yggdrasil
-    image: pvjjk-1vos-tjas/nginx:latest
+    image: pvjjk-1vos-tjas/yggdrasil:latest
     state: started
     recreate: on
     network: host
