@@ -205,22 +205,22 @@
       - kea
     state: latest
 
- - name: "Deployer - Kea - Configure"
-   ansible.builtin.template:
-     src: './files/kea/kea-dhcp4.conf'
-     dest: '/etc/kea/kea-dhcp4.conf'
-   register: deployerTaskD1
-   tags:
-     - kea
-     - dhcp
+- name: "Deployer - Kea - Configure"
+  ansible.builtin.template:
+    src: './files/kea/kea-dhcp4.conf'
+    dest: '/etc/kea/kea-dhcp4.conf'
+  register: deployerTaskD1
+  tags:
+    - kea
+    - dhcp
 
- - name: "Deployer : Kea : Restart"
-   ansible.builtin.systemd_service:
-     name: kea-dhcp4-server
-     state: restarted
-     enabled: true
-   when:
-     - (deployerTaskD1 is defined and deployerTaskD1.changed) or deployerTaskD1 is undefined
+- name: "Deployer : Kea : Restart"
+  ansible.builtin.systemd_service:
+    name: kea-dhcp4-server
+    state: restarted
+    enabled: true
+  when:
+    - (deployerTaskD1 is defined and deployerTaskD1.changed) or deployerTaskD1 is undefined
   tags:
     - kea
     - dhcp
