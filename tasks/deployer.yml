@@ -102,6 +102,7 @@
     state: directory
   tags:
     - mariadb
+    - database
 
 - name: "Deployer - MariaDB - Pull Image"
   containers.podman.podman_image:
@@ -127,6 +128,7 @@
     - (deployerTaskM1 is defined and deployerTaskM1.changed) or deployerTaskM1 is undefined
   tags:
     - mariadb
+    - database
 
 - name: "Deployer - MariaDB - Wait"
   ansible.builtin.wait_for:
@@ -137,6 +139,7 @@
     - (deployerTaskM2 is defined and deployerTaskM2.changed) or deployerTaskM2 is undefined
   tags:
     - mariadb
+    - database
 
 - name: "Deployer - MariaDB - Upgrade"
   containers.podman.podman_container_exec:
@@ -149,6 +152,7 @@
     - (deployerTaskM2 is defined and deployerTaskM2.changed) or deployerTaskM2 is undefined
   tags:
     - mariadb
+    - database
 
 - name: "Deployer - MariaDB - Create Users"
   community.mysql.mysql_user:
@@ -172,6 +176,7 @@
     - config.mariadb.users[user].database is defined
   tags:
     - mariadb
+    - database
 
 - name: "Deployer - MariaDB - Create Database"
   community.mysql.mysql_db:
@@ -192,6 +197,7 @@
     - config.mariadb.users[user].database is defined
   tags:
     - mariadb
+    - database
 
 - name: "Deployer - Kea - Install"
   ansible.builtin.apt:
@@ -199,21 +205,25 @@
       - kea
     state: latest
 
-# - name: "Deployer - DHCP - Config"
-#   ansible.builtin.template:
-#     src: './files/dhcp/dhcpd.conf'
-#     dest: '/etc/dhcp/dhcpd.conf'
-#   register: deployerTaskD1
-#   tags:
-#     - dhcp
+ - name: "Deployer - Kea - Configure"
+   ansible.builtin.template:
+     src: './files/kea/kea-dhcp4.conf'
+     dest: '/etc/kea/kea-dhcp4.conf'
+   register: deployerTaskD1
+   tags:
+     - kea
+     - dhcp
 
-# - name: "Deployer : DHCP : Restart"
-#   ansible.builtin.systemd_service:
-#     name: isc-dhcp-server
-#     state: restarted
-#     enabled: true
-#   when:
-#     - (deployerTaskD1 is defined and deployerTaskD1.changed) or deployerTaskD1 is undefined
+ - name: "Deployer : Kea : Restart"
+   ansible.builtin.systemd_service:
+     name: kea-dhcp4-server
+     state: restarted
+     enabled: true
+   when:
+     - (deployerTaskD1 is defined and deployerTaskD1.changed) or deployerTaskD1 is undefined
+  tags:
+    - kea
+    - dhcp
 
 - name: "Deployer - PowerDNS - Configure - Create Folder"
   ansible.builtin.file:
@@ -221,6 +231,7 @@
     state: directory
   tags:
     - powerdns
+    - dns
 
 - name: "Deployer - PowerDNS - Configure - Create Subfolders"
   ansible.builtin.file:
@@ -233,6 +244,7 @@
     - item.state == 'directory'
   tags:
     - powerdns
+    - dns
 
 - name: "Deployer - PowerDNS - Configure - Generating & Transferring Files"
   ansible.builtin.template:
@@ -246,6 +258,7 @@
     - item.state == 'file'
   tags:
     - powerdns
+    - dns
 
 - name: "Deployer - PowerDNS - Pull Image"
   containers.podman.podman_image:
@@ -268,6 +281,7 @@
     - (deployerTaskP1 is defined and deployerTaskP1.changed) or deployerTaskP1 is undefined or (deployerTaskP2 is defined and deployerTaskP2.changed) or deployerTaskP2 is undefined
   tags:
     - powerdns
+    - dns
 
 - name: "Deployer - Nginx - Configure - Create Folder"
   ansible.builtin.file:
@@ -275,6 +289,7 @@
     state: directory
   tags:
     - nginx
+    - www
 
 - name: "Deployer - Nginx - Configure - Create Subfolders"
   ansible.builtin.file:
@@ -287,6 +302,7 @@
     - item.state == 'directory'
   tags:
     - nginx
+    - www
 
 - name: "Deployer - Nginx - Configure - Generating & Transferring Files"
   ansible.builtin.template:
@@ -300,6 +316,7 @@
     - item.state == 'file'
   tags:
     - nginx
+    - www
 
 - name: "Deployer - Nginx - Pull Image"
   containers.podman.podman_image:
@@ -325,3 +342,4 @@
     - (deployerTaskN1 is defined and deployerTaskN1.changed) or deployerTaskN1 is undefined or (deployerTaskN2 is defined and deployerTaskN2.changed) or deployerTaskN2 is undefined
   tags:
     - nginx
+    - www
