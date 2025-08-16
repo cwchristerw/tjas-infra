@@ -205,11 +205,18 @@
       - kea
     state: latest
 
-- name: "Deployer - Kea - Configure"
+- name: "Deployer - Kea - Configure - DHCP4"
   ansible.builtin.template:
     src: './files/kea/kea-dhcp4.conf'
     dest: '/etc/kea/kea-dhcp4.conf'
   register: deployerTaskD1
+  tags:
+    - kea
+    - dhcp
+
+- name: "Deployer - Kea - Configure - Database"
+  ansible.builtin.command:
+    cmd: "kea-admin db-init mysql -h 127.0.0.1 -n {{ config.mariadb.users['kea'].database }} -u {{ config.mariadb.users['kea'].username }} -p {{ config.mariadb.users['kea'].password }}"
   tags:
     - kea
     - dhcp
