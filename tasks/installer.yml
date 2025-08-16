@@ -139,7 +139,7 @@
   tags:
     - ansible
 
-- name: "Installer - Ansible - Dependencies / Python Libraries"
+- name: "Installer - Ansible - Dependencies - Python Libraries"
   ansible.builtin.pip:
     name: "{{ library }}"
     state: latest
@@ -159,15 +159,18 @@
     label: "{{ library }}"
     loop_var: "library"
 
-- name: "Installer : MariaDB : Dependencies / Python Library : pymysql"
+- name: "Installer : MariaDB : Dependencies - Python Library : pymysql"
   ansible.builtin.pip:
     name: pymysql
     state: latest
     extra_args: --upgrade
     virtualenv: /root/.venv/ansible
     virtualenv_command: "python3 -m venv"
-  tags:
-    - mariadb
+
+- name: "Installer : MariaDB : Dependencies - Package : mariadb-client"
+  ansible.builtin.apt:
+    name: "mariadb-client"
+    state: latest
 
 - name: "Installer : Podman : Install"
   ansible.builtin.apt:
