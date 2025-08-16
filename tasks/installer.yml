@@ -50,6 +50,7 @@
       - pkg-config
       - etckeeper
       - picocom
+      - vlan
   loop: "{{ packages }}"
   loop_control:
     label: "{{ package }}"
