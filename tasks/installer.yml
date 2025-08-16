@@ -66,17 +66,26 @@
       - python3-firewall
       - iptables
     state: latest
+  tags:
+    - firewalld
+    - firewall
 
 - name: "Installer : FirewallD : Install"
   ansible.builtin.apt:
     name: "firewalld"
     state: latest
+  tags:
+    - firewalld
+    - firewall
 
 - name: "Installer : FirewallD : Start"
   ansible.builtin.systemd_service:
     name: firewalld
     state: started
     enabled: true
+  tags:
+    - firewalld
+    - firewall
 
 - name: "Installer : FirewallD : Rules"
   ansible.posix.firewalld:
@@ -94,8 +103,9 @@
   loop_control:
     label: "{{ service }}"
     loop_var: "service"
-
-
+  tags:
+    - firewalld
+    - firewall
 
 - name: "Installer - Ansible - Python Library"
   ansible.builtin.pip:
@@ -158,6 +168,8 @@
   loop_control:
     label: "{{ library }}"
     loop_var: "library"
+  tags:
+    - ansible
 
 - name: "Installer : MariaDB : Dependencies - Python Library : pymysql"
   ansible.builtin.pip:
@@ -166,11 +178,17 @@
     extra_args: --upgrade
     virtualenv: /root/.venv/ansible
     virtualenv_command: "python3 -m venv"
+  tags:
+    - mariadb
+    - database
 
 - name: "Installer : MariaDB : Dependencies - Package : mariadb-client"
   ansible.builtin.apt:
     name: "mariadb-client"
     state: latest
+  tags:
+    - mariadb
+    - database
 
 - name: "Installer : Podman : Install"
   ansible.builtin.apt:
@@ -181,6 +199,8 @@
       - buildah
       - slirp4netns
     state: latest
+  tags:
+    - podman
 
 - name: "Installer : Schedule : Maintenance"
   ansible.builtin.cron:
