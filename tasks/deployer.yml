@@ -214,7 +214,7 @@
     - kea
     - dhcp
 
-- name: "Deployer - Kea - Configure - Database"
+- name: "Deployer - Kea - Configure - Database : Init"
   ansible.builtin.command:
     cmd: "kea-admin db-init mysql -h 127.0.0.1 -n {{ config.mariadb.users['kea'].database }} -u {{ config.mariadb.users['kea'].username }} -p {{ config.mariadb.users['kea'].password }}"
   register: deployerTaskD2
@@ -223,6 +223,13 @@
   failed_when:
     - deployerTaskD2.stdout.find('ERROR') != -1
     - deployerTaskD2.stdout.find('Expected empty database kea.') == -1
+  tags:
+    - kea
+    - dhcp
+
+- name: "Deployer - Kea - Configure - Database : Upgrade"
+  ansible.builtin.command:
+    cmd: "kea-admin db-upgrade mysql -h 127.0.0.1 -n {{ config.mariadb.users['kea'].database }} -u {{ config.mariadb.users['kea'].username }} -p {{ config.mariadb.users['kea'].password }}"
   tags:
     - kea
     - dhcp
