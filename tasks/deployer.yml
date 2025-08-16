@@ -217,6 +217,12 @@
 - name: "Deployer - Kea - Configure - Database"
   ansible.builtin.command:
     cmd: "kea-admin db-init mysql -h 127.0.0.1 -n {{ config.mariadb.users['kea'].database }} -u {{ config.mariadb.users['kea'].username }} -p {{ config.mariadb.users['kea'].password }}"
+  register: deployerTaskD2
+  changed_when:
+    - deployerTaskD2.stdout.find('Initializing database') != -1
+  failed_when:
+    - deployerTaskD2.stdout.find('ERROR') != -1
+    - deployerTaskD2.stdout.find('Expected empty database kea.') == -1
   tags:
     - kea
     - dhcp
@@ -227,7 +233,7 @@
     state: restarted
     enabled: true
   when:
-    - (deployerTaskD1 is defined and deployerTaskD1.changed) or deployerTaskD1 is undefined
+    - (deployerTaskD1 is defined and deployerTaskD1.changed) or deployerTaskD1 is undefined or (deployerTaskD2 is defined and deployerTaskD2.changed) or deployerTaskD2 is undefined
   tags:
     - kea
     - dhcp
