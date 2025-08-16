@@ -13,8 +13,8 @@ iface enp0s25 inet dhcp
 
 auto enp0s25.20
 iface enp0s25.20 inet dhcp
-  hw-mac-address: 90:1b:0e:5b:18:fb
+  hw-mac-address 90:1b:0e:5b:18:fb
 
 auto enp0s25.69
 iface enp0s25.69 inet dhcp
-  hw-mac-address: 90:1b:0e:5b:18:fc
+  hw-mac-address 90:1b:0e:5b:18:fc
