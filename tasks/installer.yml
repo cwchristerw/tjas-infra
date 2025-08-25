@@ -56,10 +56,21 @@
     label: "{{ package }}"
     loop_var: "package"
 
-- name: "Installer : Network : Configure"
+- name: "Installer : Networking : Configure - Copy Configuration"
   ansible.builtin.template:
-    src: './files/network/interfaces'
+    src: './files/networking/interfaces'
     dest: '/etc/network/interfaces'
+  tags:
+    - networking
+    - network
+
+- name: "Installer : Networking : Start - Restart Service"
+  ansible.builtin.systemd_service:
+    name: networking
+    state: restarted
+  tags:
+    - networking
+    - network
 
 - name: "Installer : FirewallD : Dependencies - Packages"
   ansible.builtin.apt:
