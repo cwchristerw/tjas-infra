@@ -56,6 +56,28 @@
     label: "{{ package }}"
     loop_var: "package"
 
+- name: "Installer : Issue : Configure - Copy File"
+  ansible.builtin.template:
+    src: './files/issue'
+    dest: '/etc/{{ file }}'
+  vars:
+    files:
+      - "issue"
+      - "issue.net"
+  loop: "{{ files }}"
+  loop_control:
+    label: "{{ file }}"
+    loop_var: "file"
+  tags:
+    - issue
+
+- name: "Installer : Motd : Configure - Copy File"
+  ansible.builtin.template:
+    src: './files/motd'
+    dest: '/etc/motd'
+  tags:
+    - motd
+
 - name: "Installer : Networking : Configure - Copy Configuration"
   ansible.builtin.template:
     src: './files/networking/interfaces'
