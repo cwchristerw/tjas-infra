@@ -12,12 +12,9 @@ allow-hotplug enp0s25
 iface enp0s25 inet dhcp
 
 auto enp0s25.20
-iface enp0s25.20 inet static
-  address 192.168.2.10/27
-  gateway 192.168.2.1
-  hw-mac-address 90:1b:0e:5b:18:fa
+iface enp0s25.20 inet dhcp
+  hw-mac-address 90:1b:0e:5b:18:fb
 
 auto enp0s25.69
-iface enp0s25.69 inet static
-  address 192.168.69.20/26
-  hw-mac-address 90:1b:0e:5b:18:fa
+iface enp0s25.69 inet dhcp
+  hw-mac-address 90:1b:0e:5b:18:fc
