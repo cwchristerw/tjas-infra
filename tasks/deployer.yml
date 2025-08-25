@@ -209,7 +209,7 @@
   ansible.builtin.template:
     src: './files/kea/kea-dhcp4.conf'
     dest: '/etc/kea/kea-dhcp4.conf'
-  register: deployerTaskD1
+  register: deployerTaskK1
   tags:
     - kea
     - dhcp
@@ -217,12 +217,12 @@
 - name: "Deployer - Kea - Configure - Database : Init"
   ansible.builtin.command:
     cmd: "kea-admin db-init mysql -h 127.0.0.1 -n {{ config.mariadb.users['kea'].database }} -u {{ config.mariadb.users['kea'].username }} -p {{ config.mariadb.users['kea'].password }}"
-  register: deployerTaskD2
+  register: deployerTaskK2
   changed_when:
-    - deployerTaskD2.stdout.find('Initializing database') != -1
+    - deployerTaskK2.stdout.find('Initializing database') != -1
   failed_when:
-    - deployerTaskD2.stdout.find('ERROR') != -1
-    - deployerTaskD2.stdout.find('Expected empty database kea.') == -1
+    - deployerTaskK2.stdout.find('ERROR') != -1
+    - deployerTaskK2.stdout.find('Expected empty database kea.') == -1
   tags:
     - kea
     - dhcp
@@ -240,7 +240,7 @@
     state: restarted
     enabled: true
   when:
-    - (deployerTaskD1 is defined and deployerTaskD1.changed) or deployerTaskD1 is undefined or (deployerTaskD2 is defined and deployerTaskD2.changed) or deployerTaskD2 is undefined
+    - (deployerTaskK1 is defined and deployerTaskK1.changed) or deployerTaskK1 is undefined or (deployerTaskK2 is defined and deployerTaskK2.changed) or deployerTaskK2 is undefined
   tags:
     - kea
     - dhcp
