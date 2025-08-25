@@ -1,5 +1,5 @@
-#Tietojärjestelmäasentajien Infra
-## PVJJK 1.VOS TJAS - Infra
+# Tietojärjestelmäasentajien Infra
+## PVJJK 1.VOS Niinisalo
 ### Ylläpitäjän ohjeet
 
 **Palvelimen asennus**
@@ -196,3 +196,9 @@ ip authorized-managers 192.168.69.20 255.255.255.255
 ip ssh
 password manager
 ```
+
+# LÄHTEET
+
+## ISSUE - ASCII ART
+ASCII Art Generator
+https://www.textmods.com/ascii-art
