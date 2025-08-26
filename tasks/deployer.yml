@@ -238,9 +238,16 @@
   ansible.builtin.systemd_service:
     name: kea-dhcp4-server
     state: restarted
-    enabled: true
   when:
     - (deployerTaskK1 is defined and deployerTaskK1.changed) or deployerTaskK1 is undefined or (deployerTaskK2 is defined and deployerTaskK2.changed) or deployerTaskK2 is undefined
+  tags:
+    - kea
+    - dhcp
+
+- name: "Deployer : Kea : Start"
+  ansible.builtin.systemd_service:
+    name: kea-dhcp4-server
+    state: started
   tags:
     - kea
     - dhcp
