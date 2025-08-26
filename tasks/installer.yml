@@ -133,6 +133,8 @@
       - http
       - https
       - ssh
+      - dhcp
+      - dns
   loop: "{{ services }}"
   loop_control:
     label: "{{ service }}"
