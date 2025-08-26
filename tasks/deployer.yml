@@ -58,7 +58,6 @@
   containers.podman.podman_image:
     name: docker.io/library/golang
     tag: alpine
-#    force: true
   register: deployerTaskY2
 
 - name: "Deployer - Yggdrasil - Clone Repository"
@@ -108,7 +107,6 @@
   containers.podman.podman_image:
     name: docker.io/library/mariadb
     tag: latest
-#    force: true
   register: deployerTaskM1
 
 - name: "Deployer - MariaDB - Run Container"
@@ -252,62 +250,177 @@
     - kea
     - dhcp
 
-- name: "Deployer - PowerDNS - Configure - Create Folder"
+
+- name: "Deployer - dnsdist - Configure - Create Folder"
   ansible.builtin.file:
-    path: "/root/data/powerdns/"
+    path: "/root/data/dnsdist/"
     state: directory
   tags:
-    - powerdns
+    - dnsdist
     - dns
 
-- name: "Deployer - PowerDNS - Configure - Create Subfolders"
+- name: "Deployer - dnsdist - Configure - Create Subfolders"
   ansible.builtin.file:
-    dest: '/root/data/powerdns/{{ item.path }}'
+    dest: '/root/data/dnsdist/{{ item.path }}'
     state: directory
-  with_filetree: './files/powerdns/'
+  with_filetree: './files/dnsdist/'
   loop_control:
     label: "{{ item.path }}"
   when:
     - item.state == 'directory'
   tags:
-    - powerdns
+    - dnsdist
     - dns
 
-- name: "Deployer - PowerDNS - Configure - Generating & Transferring Files"
+- name: "Deployer - dnsdist - Configure - Generating & Transferring Files"
   ansible.builtin.template:
     src: '{{ item.src }}'
-    dest: '/root/data/powerdns/{{ item.path }}'
-  register: deployerTaskP1
-  with_filetree: './files/powerdns/'
+    dest: '/root/data/dnsdist/{{ item.path }}'
+  register: deployerTaskD1
+  with_filetree: './files/dnsdist/'
   loop_control:
     label: "{{ item.path }}"
   when:
     - item.state == 'file'
   tags:
-    - powerdns
+    - dnsdist
     - dns
 
-- name: "Deployer - PowerDNS - Pull Image"
+- name: "Deployer - dnsdist - Pull Image"
   containers.podman.podman_image:
-    name: docker.io/powerdns/pdns-auth-49
+    name: docker.io/powerdns/dnsdist-20
     tag: latest
-#    force: true
-  register: deployerTaskP2
+  register: deployerTaskD2
 
-- name: "Deployer - PowerDNS - Run Container"
+- name: "Deployer - dnsdist - Run Container"
   containers.podman.podman_container:
-    name: powerdns
-    image: docker.io/powerdns/pdns-auth-49:latest
+    name: dnsdist
+    image: docker.io/powerdns/dnsdist-20:latest
     state: started
     recreate: on
     network: host
     restart_policy: always
     volumes:
-      - "/root/data/powerdns/config.conf:/etc/powerdns/pdns.conf:ro"
+      - "/root/data/dnsdist/config.conf:/etc/dnsdist/dnsdist.conf:ro"
   when:
-    - (deployerTaskP1 is defined and deployerTaskP1.changed) or deployerTaskP1 is undefined or (deployerTaskP2 is defined and deployerTaskP2.changed) or deployerTaskP2 is undefined
+    - (deployerTaskD1 is defined and deployerTaskD1.changed) or deployerTaskD1 is undefined or (deployerTaskD2 is defined and deployerTaskD2.changed) or deployerTaskD2 is undefined
   tags:
-    - powerdns
+    - dnsdist
+    - dns
+
+- name: "Deployer - PowerDNS Authorative - Configure - Create Folder"
+  ansible.builtin.file:
+    path: "/root/data/powerdns-authorative/"
+    state: directory
+  tags:
+    - powerdns-authorative
+    - dns
+
+- name: "Deployer - PowerDNS Authorative - Configure - Create Subfolders"
+  ansible.builtin.file:
+    dest: '/root/data/powerdns-authorative/{{ item.path }}'
+    state: directory
+  with_filetree: './files/powerdns-authorative/'
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - item.state == 'directory'
+  tags:
+    - powerdns-authorative
+    - dns
+
+- name: "Deployer - PowerDNS Authorative - Configure - Generating & Transferring Files"
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '/root/data/powerdns-authorative/{{ item.path }}'
+  register: deployerTaskPA1
+  with_filetree: './files/powerdns-authorative/'
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - item.state == 'file'
+  tags:
+    - powerdns-authorative
+    - dns
+
+- name: "Deployer - PowerDNS Authorative - Pull Image"
+  containers.podman.podman_image:
+    name: docker.io/powerdns/pdns-auth-50
+    tag: latest
+  register: deployerTaskPA2
+
+- name: "Deployer - PowerDNS Authorative - Run Container"
+  containers.podman.podman_container:
+    name: powerdns
+    image: docker.io/powerdns/pdns-auth-50:latest
+    state: started
+    recreate: on
+    network: host
+    restart_policy: always
+    volumes:
+      - "/root/data/powerdns-authorative/config.conf:/etc/powerdns/pdns.conf:ro"
+  when:
+    - (deployerTaskPA1 is defined and deployerTaskPA1.changed) or deployerTaskPA1 is undefined or (deployerTaskPA2 is defined and deployerTaskPA2.changed) or deployerTaskPA2 is undefined
+  tags:
+    - powerdns-authorative
+    - dns
+
+
+- name: "Deployer - PowerDNS Recursor - Configure - Create Folder"
+  ansible.builtin.file:
+    path: "/root/data/powerdns-recursor/"
+    state: directory
+  tags:
+    - powerdns-recursor
+    - dns
+
+- name: "Deployer - PowerDNS Recursor - Configure - Create Subfolders"
+  ansible.builtin.file:
+    dest: '/root/data/powerdns-recursor/{{ item.path }}'
+    state: directory
+  with_filetree: './files/powerdns-recursor/'
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - item.state == 'directory'
+  tags:
+    - powerdns-recursor
+    - dns
+
+- name: "Deployer - PowerDNS Recursor - Configure - Generating & Transferring Files"
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '/root/data/powerdns-recursor/{{ item.path }}'
+  register: deployerTaskPR1
+  with_filetree: './files/powerdns-recursor/'
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - item.state == 'file'
+  tags:
+    - powerdns-recursor
+    - dns
+
+- name: "Deployer - PowerDNS Recursor - Pull Image"
+  containers.podman.podman_image:
+    name: docker.io/powerdns/pdns-recursor-52
+    tag: latest
+  register: deployerTaskPR2
+
+- name: "Deployer - PowerDNS Recursor - Run Container"
+  containers.podman.podman_container:
+    name: powerdns
+    image: docker.io/powerdns/pdns-recursor-52:latest
+    state: started
+    recreate: on
+    network: host
+    restart_policy: always
+    volumes:
+      - "/root/data/powerdns-recursor/config.conf:/etc/powerdns/recursor.conf:ro"
+  when:
+    - (deployerTaskPR1 is defined and deployerTaskPR1.changed) or deployerTaskPR1 is undefined or (deployerTaskPR2 is defined and deployerTaskPR2.changed) or deployerTaskPR2 is undefined
+  tags:
+    - powerdns-recursor
     - dns
 
 - name: "Deployer - Nginx - Configure - Create Folder"
@@ -349,7 +462,6 @@
   containers.podman.podman_image:
     name: docker.io/library/nginx
     tag: latest
-#    force: true
   register: deployerTaskN2
 
 - name: "Deployer - Nginx - Run Container"
