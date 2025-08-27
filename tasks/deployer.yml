@@ -351,7 +351,7 @@
 
 - name: "Deployer - PowerDNS Authorative - Run Container"
   containers.podman.podman_container:
-    name: powerdns
+    name: powerdns-authorative
     image: docker.io/powerdns/pdns-auth-50:latest
     state: started
     recreate: on
@@ -409,7 +409,7 @@
 
 - name: "Deployer - PowerDNS Recursor - Run Container"
   containers.podman.podman_container:
-    name: powerdns
+    name: powerdns-recursor
     image: docker.io/powerdns/pdns-recursor-52:latest
     state: started
     recreate: on
