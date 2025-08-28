@@ -302,6 +302,8 @@
     restart_policy: always
     volumes:
       - "/root/data/dnsdist/config.conf:/etc/dnsdist/dnsdist.conf:ro"
+    tty: yes
+    interactive: yes
   when:
     - (deployerTaskD1 is defined and deployerTaskD1.changed) or deployerTaskD1 is undefined or (deployerTaskD2 is defined and deployerTaskD2.changed) or deployerTaskD2 is undefined
   tags:
