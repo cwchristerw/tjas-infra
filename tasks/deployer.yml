@@ -363,6 +363,8 @@
     restart_policy: always
     volumes:
       - "/root/data/powerdns-authorative/config.conf:/etc/powerdns/pdns.conf:ro"
+    capabilities:
+      - NET_BIND_SERVICE
   when:
     - (deployerTaskPA1 is defined and deployerTaskPA1.changed) or deployerTaskPA1 is undefined or (deployerTaskPA2 is defined and deployerTaskPA2.changed) or deployerTaskPA2 is undefined
   tags:
@@ -421,6 +423,8 @@
     restart_policy: always
     volumes:
       - "/root/data/powerdns-recursor/config.conf:/etc/powerdns/recursor.conf:ro"
+    capabilities:
+      - NET_BIND_SERVICE
   when:
     - (deployerTaskPR1 is defined and deployerTaskPR1.changed) or deployerTaskPR1 is undefined or (deployerTaskPR2 is defined and deployerTaskPR2.changed) or deployerTaskPR2 is undefined
   tags:
