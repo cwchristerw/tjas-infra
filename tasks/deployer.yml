@@ -214,7 +214,7 @@
 
 - name: "Deployer - Kea - Configure - Database : Init"
   ansible.builtin.command:
-    cmd: "kea-admin db-init mysql -h 127.0.0.1 -n {{ config.mariadb.users['kea'].database }} -u {{ config.mariadb.users['kea'].username }} -p {{ config.mariadb.users['kea'].password }}"
+    cmd: "/usr/sbin/kea-admin db-init mysql -h 127.0.0.1 -n {{ config.mariadb.users['kea'].database }} -u {{ config.mariadb.users['kea'].username }} -p {{ config.mariadb.users['kea'].password }}"
   register: deployerTaskK2
   changed_when:
     - deployerTaskK2.stdout.find('Initializing database') != -1
@@ -227,7 +227,7 @@
 
 - name: "Deployer - Kea - Configure - Database : Upgrade"
   ansible.builtin.command:
-    cmd: "kea-admin db-upgrade mysql -h 127.0.0.1 -n {{ config.mariadb.users['kea'].database }} -u {{ config.mariadb.users['kea'].username }} -p {{ config.mariadb.users['kea'].password }}"
+    cmd: "/usr/sbin/kea-admin db-upgrade mysql -h 127.0.0.1 -n {{ config.mariadb.users['kea'].database }} -u {{ config.mariadb.users['kea'].username }} -p {{ config.mariadb.users['kea'].password }}"
   tags:
     - kea
     - dhcp
