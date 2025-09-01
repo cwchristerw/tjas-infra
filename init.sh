@@ -4,24 +4,35 @@ if [ ! "$BASH_VERSION" ] ; then
     exit 1
 fi
 
+underline=`tput smul`
+nounderline=`tput rmul`
+bold=$(tput bold)
+normal=$(tput sgr0)
+
 ti-header(){
-    echo $(tput bold)$1$(tput sgr0)
+    echo ${bold}$1${normal}
 }
 
+echo "${bold}"
 echo "
-==============================
-
-PVJJK 1.VOS TJAS - Infra
-Init Script
-
-------------------------------
+ .-') _               ('-.      .-')
+(  OO) )             ( OO ).-. ( OO ).
+/     '._      ,--.  / . --. /(_)---\_)
+|'--...__) .-')| ,|  | \-.  \ /    _ |
+'--.  .--'( OO |(_|.-'-'  |  |\  :\` \`.
+   |  |   | \`-'|  | \| |_.'  | '..\`''.)
+   |  |   ,--. |  |  |  .-.  |.-._)   \\
+   |  |   |  '-'  /  |  | |  |\       /
+   \`--'    \`-----'   \`--' \`--' \`-----'
 "
+echo "
+PVJJK 1.VOS NIINISALO
+TIETOJÄRJESTELMÄASENTAJIEN INTRA
+INIT SCRIPT
+"
+echo -n "${normal}"
 
 stop () {
-
-echo "
-==============================
-"
 
 exit 1
 
