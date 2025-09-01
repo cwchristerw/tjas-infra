@@ -46,8 +46,8 @@ ti-header "Asennetaan PVJJK 1.VOS TJAS Infran riippuvuudet APT-paketinhallinnall
 sudo apt-get install -y python3-pip python3-venv jq git curl lsb-release
 echo -e "\n\n"
 
-mkdir -p /root/.ssh/keys/pvjjk-1vos-niinisalo &> /dev/null
-if [[ ! -f /root/.ssh/keys/pvjjk-1vos-niinisalo/infra ]]
+mkdir -p $HOME/.ssh/keys/pvjjk-1vos-niinisalo &> /dev/null
+if [[ ! -f $HOME/.ssh/keys/pvjjk-1vos-niinisalo/infra ]]
 then
     ti-header "Generoidaan SSH-avain Infra-repon käyttöön..."
     ssh-keygen -f $HOME/.ssh/keys/pvjjk-1vos-niinisalo/infra -t ed25519 -N '' -C $(hostname --fqdn)
