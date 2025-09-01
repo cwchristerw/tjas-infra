@@ -7,11 +7,11 @@
 2. Avaa Powershell ja asenna Debian käyttöjärjestelmä ̣– `wsl --install -d Debian`
 3. Aseta käyttäjätunnukseksi `asentaja` ja salasanaksi sama kuin työaseman Windows käyttäjän salasana.
 4. Vaihda isännän nimi
-    1. Avaa WSL konfiguraatiotiedosto – `nano /etc/wsl.conf`
+    1. Avaa WSL konfiguraatiotiedosto – `sudo nano /etc/wsl.conf`
     2. Lisää Network kohtaan tai luo Network kohta – `[network]`
     3. Lisää isännän nimi – `hostname = argo.aito.tjas`
     4. Lisää Hosts tiedoston generointi – `generateHosts = true`
-4. Asenna curl-paketti käyttämällä APT-paketinhallintaa – `apt update && apt install curl`
+4. Asenna curl-paketti käyttämällä APT-paketinhallintaa – `sudo apt update && sudo apt install curl`
 5. Lataa ja suorita Init.sh skripti – `bash <(curl https://raw.githubusercontent.com/cwchristerw/tjas-infra/refs/heads/master/init.sh)`
 
 **Palvelimen asennus**
