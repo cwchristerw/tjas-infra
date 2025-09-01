@@ -5,23 +5,23 @@ nounderline=`tput rmul`
 bold=$(tput bold)
 normal=$(tput sgr0)
 
-echo "${bold}PVJJK 1.VOS TJAS / Infra / Protect${normal}"
+echo "${bold}PVJJK 1.VOS Niinisalo / TJAS Infra / Protect${normal}"
 action=$1
 
 encrypt() {
     echo "${underline}Encrypting...${nounderline}"
-    execute "ansible-vault encrypt --vault-id pvjjk-1vos-niinisalo@vault/pvjjk-1vos-niinisalo"
+    execute "ansible-vault encrypt --vault-id $1@vault/$1" $1
 }
 
 decrypt() {
     echo "${underline}Decrypting...${nounderline}"
-    execute "ansible-vault decrypt --vault-id pvjjk-1vos-niinisalo@vault/pvjjk-1vos-niinisalo"
+    execute "ansible-vault decrypt --vault-id $1@vault/$1" $1
 }
 
 list() {
     echo "${underline}Listing...${nounderline}"
     i=0
-    for file in inventories/*/group_vars/* inventories/*/host_vars/*;
+    for file in inventories/$1/group_vars/* inventories/$1/host_vars/*;
     do
         i=$((i + 1))
         echo $i")"$file
@@ -29,7 +29,8 @@ list() {
 }
 
 execute() {
-for file in inventories/*/group_vars/* inventories/*/host_vars/*;
+i=0
+for file in inventories/$2/group_vars/* inventories/$2/host_vars/*;
     do
         i=$((i + 1))
         echo $i")"$file
@@ -40,13 +41,13 @@ for file in inventories/*/group_vars/* inventories/*/host_vars/*;
 
 case $action in
     encrypt)
-        encrypt
+        encrypt pvjjk-1vos-niinisalo
         ;;
     decrypt)
-        decrypt
+        decrypt pvjjk-1vos-niinisalo
         ;;
     list)
-        list
+        list pvjjk-1vos-niinisalo
         ;;
     help)
         echo "encrypt, decrypt, list"
