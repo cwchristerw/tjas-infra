@@ -10,6 +10,8 @@
       import_tasks: tasks/installer.yml
       vars:
         ansible_python_interpreter: "{{ ansible_facts.user_dir }}/.venv/ansible/bin/python3"
+      when:
+        - inventory_hostname == "olympus.juva.tjas"
       tags:
         - installer
         - never
@@ -18,6 +20,8 @@
       import_tasks: tasks/maintenance.yml
       vars:
         ansible_python_interpreter: "{{ ansible_facts.user_dir }}/.venv/ansible/bin/python3"
+      when:
+        - inventory_hostname == "olympus.juva.tjas"
       tags:
         - maintenance
         - never
@@ -26,6 +30,8 @@
       import_tasks: tasks/deployer.yml
       vars:
         ansible_python_interpreter: "{{ ansible_facts.user_dir }}/.venv/ansible/bin/python3"
+      when:
+        - inventory_hostname == "olympus.juva.tjas"
       tags:
         - deployer
         - never
