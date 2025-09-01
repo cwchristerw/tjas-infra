@@ -2,6 +2,18 @@
 ## PVJJK 1.VOS Niinisalo
 ### Ylläpitäjän ohjeet
 
+**Työaseman asennus**
+1. Asenna Windows Subsystem for Linux vaihtoehtoisista järjestelmäominaisuuksista.
+2. Avaa Powershell ja asenna Debian käyttöjärjestelmä ̣– `wsl --install -d Debian`
+3. Aseta käyttäjätunnukseksi `asentaja` ja salasanaksi sama kuin työaseman Windows käyttäjän salasana.
+4. Vaihda isännän nimi
+    1. Avaa WSL konfiguraatiotiedosto – `nano /etc/wsl.conf`
+    2. Lisää Network kohtaan tai luo Network kohta – `[network]`
+    3. Lisää isännän nimi – `hostname = argo.aito.tjas`
+    4. Lisää Hosts tiedoston generointi – `generateHosts = true`
+4. Asenna curl-paketti käyttämällä APT-paketinhallintaa – `apt update && apt install curl`
+5. Lataa ja suorita Init.sh skripti – `bash <(curl https://raw.githubusercontent.com/cwchristerw/tjas-infra/refs/heads/master/init.sh)`
+
 **Palvelimen asennus**
 1. Asenna Debian-käyttöjärjestelmä
 2. Asenna curl-paketti käyttämällä APT-paketinhallintaa – `apt update && apt install curl`
