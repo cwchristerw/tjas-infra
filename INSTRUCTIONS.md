@@ -4,15 +4,24 @@
 
 **Työaseman asennus**
 1. Asenna Windows Subsystem for Linux vaihtoehtoisista järjestelmäominaisuuksista.
-2. Avaa Powershell ja asenna Debian käyttöjärjestelmä ̣– `wsl --install -d Debian`
-3. Aseta käyttäjätunnukseksi `asentaja` ja salasanaksi sama kuin työaseman Windows käyttäjän salasana.
-4. Vaihda isännän nimi
-    1. Avaa WSL konfiguraatiotiedosto – `sudo nano /etc/wsl.conf`
-    2. Lisää Network kohtaan tai luo Network kohta – `[network]`
-    3. Lisää isännän nimi – `hostname = argo.aito.tjas`
-    4. Lisää Hosts tiedoston generointi – `generateHosts = true`
-4. Asenna curl-paketti käyttämällä APT-paketinhallintaa – `sudo apt update && sudo apt install curl`
-5. Lataa ja suorita Init.sh skripti – `bash <(curl https://raw.githubusercontent.com/cwchristerw/tjas-infra/refs/heads/master/init.sh)`
+2. Käynnistä työasema uudelleen
+3. Asenna Debian käyttöjärjestelmä
+    1. Avaa Powershell järjestelmänvalvojana
+    2. Suorita asennuskomento – `wsl --install -d Debian`
+    3. Aseta käyttäjätunnukseksi `asentaja` ja salasanaksi sama kuin työaseman Windows käyttäjän salasana.
+    4. Vaihda isännän nimi
+        1. Lisää Network kohtaan tai luo Network kohta – `echo "[network]" > /etc/wsl.conf`
+        2. Lisää isännän nimi – `echo "hostname = argo.aito.tjas" > /etc/wsl.conf`
+        3. Lisää Hosts tiedoston generointi – `echo "generateHosts = true" > /etc/wsl.conf`
+    5. Sulje ikkuna
+4. Aseta Debian oletusarvoiseksi käyttöjärjestelmäksi ja käynnistä se uudelleen
+    1. Avaa Powershell järjestelmänvalvojana
+    2. Vaihda oletusarvoinen käyttöjärjestelmä – `wsl --set-default Debian`
+    3. Käynnistä uudelleen käyttöjärjestelmä – `wsl -t Debian`
+    4. Sulje ikkuna
+6. Avaa Debian käynnistävalikosta tai suorita Powershellissä komento järjestelmänvalvojana `wsl -d Debian`
+7. Asenna curl-paketti käyttämällä APT-paketinhallintaa – `sudo apt update && sudo apt install curl`
+8. Lataa ja suorita Init.sh skripti – `bash <(curl https://raw.githubusercontent.com/cwchristerw/tjas-infra/refs/heads/master/init.sh)`
 
 **Palvelimen asennus**
 1. Asenna Debian-käyttöjärjestelmä
