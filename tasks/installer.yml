@@ -240,7 +240,7 @@
 
 - name: "Installer : Schedule : Maintenance"
   ansible.builtin.cron:
-    name: "PVJJK 1.VOS TJAS - Infra - Maintenance"
+    name: "{{ location | upper }} - Infra - Maintenance"
     hour: "*/3"
     minute: "0"
     job: "/root/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/pvjjk-1vos-niinisalo/infra --accept-host-key --private-key /root/.ssh/keys/pvjjk-1vos-niinisalo/infra --vault-password-file /root/.ansible/vault/pvjjk-1vos-niinisalo tasks.yml -t maintenance"
@@ -249,7 +249,7 @@
 
 - name: "Installer : Schedule : Deployer"
   ansible.builtin.cron:
-    name: "PVJJK 1.VOS TJAS - Infra - Deployer"
+    name: "{{ location | upper }} - Infra - Deployer"
     minute: "*/5"
     job: "/root/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/pvjjk-1vos-niinisalo/infra --accept-host-key --private-key /root/.ssh/keys/pvjjk-1vos-niinisalo/infra --vault-password-file /root/.ansible/vault/pvjjk-1vos-niinisalo tasks.yml -t deployer"
   tags:

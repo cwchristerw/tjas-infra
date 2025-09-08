@@ -41,23 +41,15 @@ ti-header "Haetaan pakettien tiedot..."
 sudo apt update
 echo -e "\n\n"
 
-ti-header "Asennetaan PVJJK 1.VOS TJAS Infran riippuvuudet APT-paketinhallinnalla..."
+ti-header "Asennetaan Ansiblen järjestelmäpaketti riippuvuudet..."
 sudo apt-get install -y python3-pip python3-venv jq git curl lsb-release
 echo -e "\n\n"
-
-mkdir -p $HOME/.ssh/keys/pvjjk-1vos-niinisalo &> /dev/null
-if [[ ! -f $HOME/.ssh/keys/pvjjk-1vos-niinisalo/infra ]]
-then
-    ti-header "Generoidaan SSH-avain Infra-repon käyttöön..."
-    ssh-keygen -f $HOME/.ssh/keys/pvjjk-1vos-niinisalo/infra -t ed25519 -N '' -C $(hostname --fqdn)
-    echo -e "\n\n"
-fi
 
 ti-header "Luodaan Ansiblelle virtuaalinen ympäristö..."
 python3 -m venv $HOME/.venv/ansible
 echo -e "\n\n"
 
-ti-header "Asennetaan Ansiblen riippuvuudet..."
+ti-header "Asennetaan Ansiblen Python-kirjasto riippuvuudet..."
 $HOME/.venv/ansible/bin/pip3 install cryptography dnspython hvac jmespath netaddr pexpect
 echo -e "\n\n"
 
@@ -68,6 +60,14 @@ echo -e "\n\n"
 ti-header "Asennetaan Ansible kokoelmat..."
 $HOME/.venv/ansible/bin/ansible-galaxy collection install ansible.posix containers.podman --upgrade
 echo -e "\n\n"
+
+mkdir -p $HOME/.ssh/keys/pvjjk-1vos-niinisalo &> /dev/null
+if [[ ! -f $HOME/.ssh/keys/pvjjk-1vos-niinisalo/infra ]]
+then
+    ti-header "Generoidaan SSH-avain Infra-repon käyttöön..."
+    ssh-keygen -f $HOME/.ssh/keys/pvjjk-1vos-niinisalo/infra -t ed25519 -N '' -C $(hostname --fqdn)
+    echo -e "\n\n"
+fi
 
 ti-header "Lisää SSH-avain Infra-repon käyttöön..."
 cat $HOME/.ssh/keys/pvjjk-1vos-niinisalo/infra.pub

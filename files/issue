@@ -12,9 +12,9 @@
    `--'    `-----'   `--' `--' `-----'
 
 
-PVJJK 1.VOS NIINISALO
+{{ location | upper }}
 TIETOJÄRJESTELMÄASENTAJIEN INTRA
-olympus.juva.tjas
+{{ hostname | upper }}
 
 Made by
 Jääkäri Warén

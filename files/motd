@@ -15,9 +15,9 @@
            |_|
 
 
-PVJJK 1.VOS NIINISALO
+{{ location | upper }}
 TIETOJÄRJESTELMÄASENTAJIEN INTRA
-olympus.juva.tjas
+{{ hostname | upper }}
 
 Palvelimen hallinta on automatisoitu. Manuaaliset muutokset saatetaan
 ylikirjoittaa automatisoidusti.
