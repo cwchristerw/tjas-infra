@@ -347,11 +347,33 @@
     - powerdns-authorative
     - dns
 
+- name: "Deployer - PowerDNS Authorative - Database - Init"
+  community.mysql.mysql_db:
+    login_host: "127.0.0.1"
+    login_user: "{{ config.mariadb.users['powerdns'].username }}"
+    login_password: "{{ config.mariadb.users['powerdns'].password }}"
+    name: "{{ config.mariadb.users['powerdns'].database }}"
+    state: import
+    target: './files/powerdns-authorative/schema.mysql.sql'
+  register: deployerTaskPA2
+  failed_when:
+    - "deployerTaskPA2.msg.find('ERROR') != -1"
+    - "deployerTaskPA2.msg.find('already exists') == -1"
+  when:
+    - config.mariadb.users is defined
+    - config.mariadb.users['powerdns'] is defined
+    - config.mariadb.users['powerdns'].username is defined
+    - config.mariadb.users['powerdns'].password is defined
+    - config.mariadb.users['powerdns'].database is defined
+  tags:
+    - powerdns-authorative
+    - dns
+
 - name: "Deployer - PowerDNS Authorative - Pull Image"
   containers.podman.podman_image:
     name: docker.io/powerdns/pdns-auth-50
     tag: latest
-  register: deployerTaskPA2
+  register: deployerTaskPA3
 
 - name: "Deployer - PowerDNS Authorative - Run Container"
   containers.podman.podman_container:
@@ -366,7 +388,7 @@
     capabilities:
       - NET_BIND_SERVICE
   when:
-    - (deployerTaskPA1 is defined and deployerTaskPA1.changed) or deployerTaskPA1 is undefined or (deployerTaskPA2 is defined and deployerTaskPA2.changed) or deployerTaskPA2 is undefined
+    - (deployerTaskPA1 is defined and deployerTaskPA1.changed) or deployerTaskPA1 is undefined or (deployerTaskPA3 is defined and deployerTaskPA3.changed) or deployerTaskPA3 is undefined
   tags:
     - powerdns-authorative
     - dns
