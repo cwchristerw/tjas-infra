@@ -1,6 +1,5 @@
 # Tietojärjestelmäasentajien Infra
-## PVJJK 1.VOS Niinisalo
-### Ylläpitäjän ohjeet
+## Ylläpitäjän ohjeet
 
 **Työaseman asennus**
 1. Asenna Windows Subsystem for Linux vaihtoehtoisista järjestelmäominaisuuksista.

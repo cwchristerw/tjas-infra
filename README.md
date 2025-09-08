@@ -1,9 +1,9 @@
 # Tietojärjestelmäasentajien Infra
-## PVJJK 1.VOS NIINISALO
+## Tervetuloa
 
 Infran toteutus aloitettiin vuonna 2025 ja sen on suunnitellut [Jääkäri Warén](https://christerwaren.fi).
 
-Voit halutessasi pyytää oikeudet tähän Github-repoon. Oikeudet myönnetään vain, jos olet 1.VOS:issa. Voit myös halutessasi forkata projektin ja jatkokehittää sitä eteenpäin tekemällä Pull Requestin.
+Voit halutessasi pyytää oikeudet tähän Github-repoon. Oikeudet myönnetään vain, jos olet niihin oikeutettu. Voit myös halutessasi forkata projektin ja jatkokehittää sitä eteenpäin tekemällä Pull Requestin.
 
 [Lue käyttöohjeet](INSTRUCTIONS.md)
 
