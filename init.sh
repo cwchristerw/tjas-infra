@@ -26,7 +26,6 @@ echo "
    \`--'    \`-----'   \`--' \`--' \`-----'
 "
 echo "
-PVJJK 1.VOS NIINISALO
 TIETOJÄRJESTELMÄASENTAJIEN INTRA
 INIT SCRIPT
 "
