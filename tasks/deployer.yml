@@ -453,6 +453,120 @@
     - powerdns-recursor
     - dns
 
+- name: "Deployer - OpenSSL - Configure - Create Folder"
+  ansible.builtin.file:
+    path: "/root/data/openssl/"
+    state: directory
+  tags:
+    - openssl
+    - www
+
+- name: "Deployer - OpenSSL - Configure - Generate Private Key"
+  community.crypto.openssl_privatekey:
+    path: "/root/data/openssl/{{ cert }}/privatekey.pem"
+  loop: "{{ config.openssl.certificates.keys() | list }}"
+  loop_control:
+    label: "{{ cert }}"
+    loop_var: "cert"
+  tags:
+    - openssl
+    - www
+
+- name: "Deployer - OpenSSL - Configure - Generate Certificate Signing Request / Root"
+  community.crypto.openssl_csr:
+    path: "/root/data/openssl/{{ cert }}/csr.pem"
+    privatekey_path: "/root/data/openssl/{{ cert }}/privatekey.pem"
+    commonName: "{{ config.openssl[cert].commonName }}"
+    organizationName: "{{ config.openssl.certificates[cert].organization.name }}"
+    organizationUnit: "{{ config.openssl.certificates[cert].organization.unit }}"
+    countryName: FI
+  loop: "{{ config.openssl.certificates.keys() | list }}"
+  loop_control:
+    label: "{{ cert }}"
+    loop_var: "cert"
+  when:
+    - config.openssl.certificates[cert].location.providence is not defined
+    - config.openssl.certificates[cert].location.city is not defined
+    - config.openssl.certificates[cert].domains is undefined
+  tags:
+    - openssl
+    - www
+
+- name: "Deployer - OpenSSL - Configure - Generate Certificate Signing Request / Intermediate"
+  community.crypto.openssl_csr:
+    path: "/root/data/openssl/{{ cert }}/csr.pem"
+    privatekey_path: "/root/data/openssl/{{ cert }}/privatekey.pem"
+    commonName: "{{ config.openssl[cert].commonName }}"
+    organizationName: "{{ config.openssl.certificates[cert].organization.name }}"
+    organizationUnit: "{{ config.openssl.certificates[cert].organization.unit }}"
+    stateOrProvinceName: "{{ config.openssl.certificates[cert].location.providence }}"
+    localityName: "{{ config.openssl.certificates[cert].location.city }}"
+    countryName: FI
+  loop: "{{ config.openssl.certificates.keys() | list }}"
+  loop_control:
+    label: "{{ cert }}"
+    loop_var: "cert"
+  when:
+    - config.openssl.certificates[cert].location.providence is defined
+    - config.openssl.certificates[cert].location.city is defined
+    - config.openssl.certificates[cert].domains is undefined
+  tags:
+    - openssl
+    - www
+
+- name: "Deployer - OpenSSL - Configure - Generate Certificate Signing Request / Service"
+  community.crypto.openssl_csr:
+    path: "/root/data/openssl/{{ cert }}/csr.pem"
+    privatekey_path: "/root/data/openssl/{{ cert }}/privatekey.pem"
+    commonName: "{{ config.openssl[cert].commonName }}"
+    organizationName: "{{ config.openssl.certificates[cert].organization.name }}"
+    organizationUnit: "{{ config.openssl.certificates[cert].organization.unit }}"
+    stateOrProvinceName: "{{ config.openssl.certificates[cert].location.providence | default(None) }}"
+    localityName: "{{ config.openssl.certificates[cert].location.city | default(None) }}"
+    countryName: FI
+    subjectAltName: "{{ config.openssl.certificates[cert].domains }}"
+  loop: "{{ config.openssl.certificates.keys() | list }}"
+  loop_control:
+    label: "{{ cert }}"
+    loop_var: "cert"
+  when:
+    - config.openssl.certificates[cert].domains is defined
+  tags:
+    - openssl
+    - www
+
+- name: "Deployer - OpenSSL - Configure - Generate Certificate"
+  community.crypto.x509_certificate:
+    path: "/root/data/openssl/{{ cert }}/cert.pem"
+    privatekey_path: "/root/data/openssl/{{ cert }}/privatekey.pem"
+    csr_path: "/root/data/openssl/{{ cert }}/csr.pem"
+    provider: "ownca"
+    ownca_path: /etc/ssl/crt/ansible_CA.crt
+    ownca_privatekey_path: /etc/ssl/private/ansible_CA.pem
+    provider: selfsigned
+  loop: "{{ config.openssl.certificates.keys() | list }}"
+  loop_control:
+    label: "{{ cert }}"
+    loop_var: "cert"
+  when:
+    - config.openssl.certificates[cert].issuer is undefined
+
+- name: "Deployer - OpenSSL - Configure - Generate Certificate"
+  community.crypto.x509_certificate:
+    path: "/root/data/openssl/{{ cert }}/cert.pem"
+    privatekey_path: "/root/data/openssl/{{ cert }}/privatekey.pem"
+    csr_path: "/root/data/openssl/{{ cert }}/csr.pem"
+    provider: "ownca"
+    ownca_path: "/root/data/openssl/{{ config.openssl.certificates[cert].issuer }}/cert.pem"
+    ownca_privatekey_path: "/root/data/openssl/{{ config.openssl.certificates[cert].issuer }}/privatekey.pem"
+    provider: ownca
+  loop: "{{ config.openssl.certificates.keys() | list }}"
+  loop_control:
+    label: "{{ cert }}"
+    loop_var: "cert"
+  when:
+    - config.openssl.certificates[cert].issuer is defined
+
 - name: "Deployer - Nginx - Configure - Create Folder"
   ansible.builtin.file:
     path: "/root/data/nginx/"
@@ -505,10 +619,11 @@
       - "{{ ansible_facts.user_dir }}/data/nginx/index.html:/usr/share/nginx/html/index.html:ro"
       - "{{ ansible_facts.user_dir }}/data/nginx/config.conf:/etc/nginx/nginx.conf:ro"
       - "{{ ansible_facts.user_dir }}/data/nginx/conf/:/etc/nginx/conf.d/:ro"
-      #- "{{ ansible_facts.user_dir }}/data/certs/:/etc/nginx/certs/:ro"
+      - "{{ ansible_facts.user_dir }}/data/openssl/:/etc/nginx/certs/:ro"
     restart_policy: always
   when:
     - (deployerTaskN1 is defined and deployerTaskN1.changed) or deployerTaskN1 is undefined or (deployerTaskN2 is defined and deployerTaskN2.changed) or deployerTaskN2 is undefined
   tags:
     - nginx
     - www
+
