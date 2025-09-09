@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>{{ ansible_facts.fqdn }}</title>
+        <title>{{ hostname }}</title>
         <meta charset="UTF-8">
         <meta name="robots" content="noindex">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -47,11 +47,12 @@
     </head>
     <body>
         <div>
+            <img src="data:image/svg+xml;base64,{{ lookup('ansible.builtin.file', './files/assets/logo.svg') | ansible.builtin.b64encode }}">
             <p class="org">{{ location | upper }}</p>
             <p class="link"><a href="https://intra.tjas">Visit website</a></p>
 
             <div class="server">
-                <p class="name">{{ ansible_facts.fqdn }}</p>
+                <p class="name">{{ hostname }}</p>
             </div>
         </div>
 
