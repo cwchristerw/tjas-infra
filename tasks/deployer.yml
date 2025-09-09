@@ -480,7 +480,7 @@
   community.crypto.openssl_csr:
     path: "/root/data/openssl/{{ cert }}/csr.pem"
     privatekey_path: "/root/data/openssl/{{ cert }}/privatekey.pem"
-    commonName: "{{ config.openssl[cert].commonName }}"
+    commonName: "{{ config.openssl.certificates[cert].commonName }}"
     organizationName: "{{ config.openssl.certificates[cert].organization.name }}"
     organizationUnit: "{{ config.openssl.certificates[cert].organization.unit }}"
     countryName: FI
@@ -500,7 +500,7 @@
   community.crypto.openssl_csr:
     path: "/root/data/openssl/{{ cert }}/csr.pem"
     privatekey_path: "/root/data/openssl/{{ cert }}/privatekey.pem"
-    commonName: "{{ config.openssl[cert].commonName }}"
+    commonName: "{{ config.openssl.certificates[cert].commonName }}"
     organizationName: "{{ config.openssl.certificates[cert].organization.name }}"
     organizationUnit: "{{ config.openssl.certificates[cert].organization.unit }}"
     stateOrProvinceName: "{{ config.openssl.certificates[cert].location.providence }}"
@@ -522,7 +522,7 @@
   community.crypto.openssl_csr:
     path: "/root/data/openssl/{{ cert }}/csr.pem"
     privatekey_path: "/root/data/openssl/{{ cert }}/privatekey.pem"
-    commonName: "{{ config.openssl[cert].commonName }}"
+    commonName: "{{ config.openssl.certificates[cert].commonName }}"
     organizationName: "{{ config.openssl.certificates[cert].organization.name }}"
     organizationUnit: "{{ config.openssl.certificates[cert].organization.unit }}"
     stateOrProvinceName: "{{ config.openssl.certificates[cert].location.providence | default(None) }}"
