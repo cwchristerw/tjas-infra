@@ -468,6 +468,8 @@
 - name: "Deployer - OpenSSL - Configure - Generate Private Key"
   community.crypto.openssl_privatekey:
     path: "/root/data/openssl/{{ cert }}/privatekey.pem"
+    type: ECC
+    curve: secp384r1
   loop: "{{ config.openssl.certificates.keys() | list }}"
   loop_control:
     label: "{{ cert }}"
