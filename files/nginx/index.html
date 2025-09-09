@@ -2,9 +2,22 @@
 <html lang="en">
     <head>
         <title>{{ hostname }}</title>
+
+        <!-- Meta: Charset -->
         <meta charset="UTF-8">
-        <meta name="robots" content="noindex">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Meta: Viewport -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+        <!-- Meta: Robots -->
+        <meta name="robots" content="noindex,noodp,noarchive">
+        <meta name="google" content="notranslate">
+
+        <!-- Link: Preconnect & DNS Prefetch & Preload -->
+        <link rel="preconnect" href="//cdn.waren.io">
+        <link rel="dns-prefetch" href="//cdn.waren.io">
+        <link rel="preload" as="style" href="https://cdn.waren.io/frameworks/font-awesome/7.0.0/css/all.min.css" crossorigin="anonymous">
+        <link rel="preload" as="font" type="font/woff2" href="https://cdn.waren.io/frameworks/font-awesome/7.0.0/webfonts/fa-solid-900.woff2" crossorigin="anonymous">
 
         <style>
             body {
@@ -32,33 +45,39 @@
                 margin-top: 0px;
             }
 
-            .org {
-                font-size: xx-large;
+            a {
+                font-weight: bold;
+                text-decoration: none;
             }
 
-            .link {
-                margin-top: 10px;
-            }
-
-            .server {
+            footer {
                 margin-top: 50px;
             }
 
-            .server * {
+            footer * {
                 color: #555555;
             }
         </style>
+
+        <!-- Link: CSS -->
+        <link rel="stylesheet" href="https://cdn.waren.io/frameworks/font-awesome/7.0.0/css/all.min.css" crossorigin="anonymous" media="screen">
     </head>
     <body>
-        <div>
+        <header>
+            <h1 style="display:none;">TJAS - Tango Juliet Alpha Sierra</h1>
             <img src="data:image/svg+xml;base64,{{ lookup('ansible.builtin.file', './assets/images/logo.svg') | ansible.builtin.b64encode }}" alt="TJAS - Tango Juliet Alpha Sierra">
-            <p class="link"><a href="https://intra.tjas">Visit website</a></p>
-
+        </header>
+        <nav>
+            <ul>
+                <li><a href="https://cloud.tjas"><i class="fa-solid fa-cloud"></i> Cloud</a></li>
+                <li><a href="https://status.tjas"><i class="fa-solid fa-signal"></i> Status</a></li>
+            </ul>
+        </nav>
+        <footer>
             <div class="server">
-                <p class="name">{{ hostname }}</p>
+                <p class="name">{{ hostname | upper }}</p>
                 <p class="location">{{ location | upper }}</p>
             </div>
-        </div>
-
+        </footer>
     </body>
 </html>
