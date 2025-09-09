@@ -467,7 +467,7 @@
 
 - name: "Deployer - OpenSSL - Configure - Generate Private Key"
   community.crypto.openssl_privatekey:
-    path: "/root/data/openssl/{{ cert }}/privatekey.pem"
+    path: "/root/data/openssl/{{ cert }}/privkey.pem"
     type: ECC
     curve: secp384r1
   loop: "{{ config.openssl.certificates.keys() | list }}"
@@ -481,7 +481,7 @@
 - name: "Deployer - OpenSSL - Configure - Generate Certificate Signing Request / Root"
   community.crypto.openssl_csr:
     path: "/root/data/openssl/{{ cert }}/csr.pem"
-    privatekey_path: "/root/data/openssl/{{ cert }}/privatekey.pem"
+    privatekey_path: "/root/data/openssl/{{ cert }}/privkey.pem"
     commonName: "{{ config.openssl.certificates[cert].commonName }}"
     organizationName: "{{ config.openssl.certificates[cert].organization.name }}"
     organizationalUnitName: "{{ config.openssl.certificates[cert].organization.unit }}"
@@ -501,7 +501,7 @@
 - name: "Deployer - OpenSSL - Configure - Generate Certificate Signing Request / Intermediate"
   community.crypto.openssl_csr:
     path: "/root/data/openssl/{{ cert }}/csr.pem"
-    privatekey_path: "/root/data/openssl/{{ cert }}/privatekey.pem"
+    privatekey_path: "/root/data/openssl/{{ cert }}/privkey.pem"
     commonName: "{{ config.openssl.certificates[cert].commonName }}"
     organizationName: "{{ config.openssl.certificates[cert].organization.name }}"
     organizationalUnitName: "{{ config.openssl.certificates[cert].organization.unit }}"
@@ -523,7 +523,7 @@
 - name: "Deployer - OpenSSL - Configure - Generate Certificate Signing Request / Service"
   community.crypto.openssl_csr:
     path: "/root/data/openssl/{{ cert }}/csr.pem"
-    privatekey_path: "/root/data/openssl/{{ cert }}/privatekey.pem"
+    privatekey_path: "/root/data/openssl/{{ cert }}/privkey.pem"
     commonName: "{{ config.openssl.certificates[cert].commonName }}"
     organizationName: "{{ config.openssl.certificates[cert].organization.name }}"
     organizationalUnitName: "{{ config.openssl.certificates[cert].organization.unit }}"
@@ -544,7 +544,7 @@
 - name: "Deployer - OpenSSL - Configure - Generate Certificate"
   community.crypto.x509_certificate:
     path: "/root/data/openssl/{{ cert }}/cert.pem"
-    privatekey_path: "/root/data/openssl/{{ cert }}/privatekey.pem"
+    privatekey_path: "/root/data/openssl/{{ cert }}/privkey.pem"
     csr_path: "/root/data/openssl/{{ cert }}/csr.pem"
     provider: "ownca"
     ownca_path: /etc/ssl/crt/ansible_CA.crt
@@ -560,11 +560,11 @@
 - name: "Deployer - OpenSSL - Configure - Generate Certificate"
   community.crypto.x509_certificate:
     path: "/root/data/openssl/{{ cert }}/cert.pem"
-    privatekey_path: "/root/data/openssl/{{ cert }}/privatekey.pem"
+    privatekey_path: "/root/data/openssl/{{ cert }}/privkey.pem"
     csr_path: "/root/data/openssl/{{ cert }}/csr.pem"
     provider: "ownca"
     ownca_path: "/root/data/openssl/{{ config.openssl.certificates[cert].issuer }}/cert.pem"
-    ownca_privatekey_path: "/root/data/openssl/{{ config.openssl.certificates[cert].issuer }}/privatekey.pem"
+    ownca_privatekey_path: "/root/data/openssl/{{ config.openssl.certificates[cert].issuer }}/privkey.pem"
     provider: ownca
   loop: "{{ config.openssl.certificates.keys() | list }}"
   loop_control:
