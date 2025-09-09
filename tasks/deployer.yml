@@ -541,7 +541,7 @@
     - openssl
     - www
 
-- name: "Deployer - OpenSSL - Configure - Generate Certificate"
+- name: "Deployer - OpenSSL - Configure - Generate Certificate / Root"
   community.crypto.x509_certificate:
     path: "/root/data/openssl/{{ cert }}/cert.pem"
     privatekey_path: "/root/data/openssl/{{ cert }}/privkey.pem"
@@ -550,6 +550,7 @@
     ownca_path: /etc/ssl/crt/ansible_CA.crt
     ownca_privatekey_path: /etc/ssl/private/ansible_CA.pem
     provider: selfsigned
+    selfsigned_not_after: "+7300d"
   loop: "{{ config.openssl.certificates.keys() | list }}"
   loop_control:
     label: "{{ cert }}"
@@ -557,7 +558,7 @@
   when:
     - config.openssl.certificates[cert].issuer is undefined
 
-- name: "Deployer - OpenSSL - Configure - Generate Certificate"
+- name: "Deployer - OpenSSL - Configure - Generate Certificate / Intermediate"
   community.crypto.x509_certificate:
     path: "/root/data/openssl/{{ cert }}/cert.pem"
     privatekey_path: "/root/data/openssl/{{ cert }}/privkey.pem"
@@ -566,11 +567,31 @@
     ownca_path: "/root/data/openssl/{{ config.openssl.certificates[cert].issuer }}/cert.pem"
     ownca_privatekey_path: "/root/data/openssl/{{ config.openssl.certificates[cert].issuer }}/privkey.pem"
     provider: ownca
+    ownca_not_after: "+365d"
   loop: "{{ config.openssl.certificates.keys() | list }}"
   loop_control:
     label: "{{ cert }}"
     loop_var: "cert"
   when:
+    - config.openssl.certificates[cert].domains is undefined
+    - config.openssl.certificates[cert].issuer is defined
+
+- name: "Deployer - OpenSSL - Configure - Generate Certificate / Service"
+  community.crypto.x509_certificate:
+    path: "/root/data/openssl/{{ cert }}/cert.pem"
+    privatekey_path: "/root/data/openssl/{{ cert }}/privkey.pem"
+    csr_path: "/root/data/openssl/{{ cert }}/csr.pem"
+    provider: "ownca"
+    ownca_path: "/root/data/openssl/{{ config.openssl.certificates[cert].issuer }}/cert.pem"
+    ownca_privatekey_path: "/root/data/openssl/{{ config.openssl.certificates[cert].issuer }}/privkey.pem"
+    provider: ownca
+    ownca_not_after: "+30d"
+  loop: "{{ config.openssl.certificates.keys() | list }}"
+  loop_control:
+    label: "{{ cert }}"
+    loop_var: "cert"
+  when:
+    - config.openssl.certificates[cert].domains is defined
     - config.openssl.certificates[cert].issuer is defined
 
 - name: "Deployer - Nginx - Configure - Create Folder"
