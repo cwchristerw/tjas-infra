@@ -455,8 +455,12 @@
 
 - name: "Deployer - OpenSSL - Configure - Create Folder"
   ansible.builtin.file:
-    path: "/root/data/openssl/"
+    path: "/root/data/openssl/{{ cert }}"
     state: directory
+  loop: "{{ config.openssl.certificates.keys() | list }}"
+  loop_control:
+    label: "{{ cert }}"
+    loop_var: "cert"
   tags:
     - openssl
     - www
