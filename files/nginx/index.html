@@ -47,7 +47,7 @@
     </head>
     <body>
         <div>
-            <img src="data:image/svg+xml;base64,{{ lookup('ansible.builtin.file', './files/assets/logo.svg') | ansible.builtin.b64encode }}">
+            <img src="data:image/svg+xml;base64,{{ lookup('ansible.builtin.file', './assets/images/logo.svg') | ansible.builtin.b64encode }}">
             <p class="org">{{ location | upper }}</p>
             <p class="link"><a href="https://intra.tjas">Visit website</a></p>
 
