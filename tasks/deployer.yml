@@ -484,7 +484,7 @@
     privatekey_path: "/root/data/openssl/{{ cert }}/privatekey.pem"
     commonName: "{{ config.openssl.certificates[cert].commonName }}"
     organizationName: "{{ config.openssl.certificates[cert].organization.name }}"
-    organizationUnit: "{{ config.openssl.certificates[cert].organization.unit }}"
+    organizationUnitName: "{{ config.openssl.certificates[cert].organization.unit }}"
     countryName: FI
   loop: "{{ config.openssl.certificates.keys() | list }}"
   loop_control:
@@ -504,7 +504,7 @@
     privatekey_path: "/root/data/openssl/{{ cert }}/privatekey.pem"
     commonName: "{{ config.openssl.certificates[cert].commonName }}"
     organizationName: "{{ config.openssl.certificates[cert].organization.name }}"
-    organizationUnit: "{{ config.openssl.certificates[cert].organization.unit }}"
+    organizationUnitName: "{{ config.openssl.certificates[cert].organization.unit }}"
     stateOrProvinceName: "{{ config.openssl.certificates[cert].location.providence }}"
     localityName: "{{ config.openssl.certificates[cert].location.city }}"
     countryName: FI
@@ -526,7 +526,7 @@
     privatekey_path: "/root/data/openssl/{{ cert }}/privatekey.pem"
     commonName: "{{ config.openssl.certificates[cert].commonName }}"
     organizationName: "{{ config.openssl.certificates[cert].organization.name }}"
-    organizationUnit: "{{ config.openssl.certificates[cert].organization.unit }}"
+    organizationUnitName: "{{ config.openssl.certificates[cert].organization.unit }}"
     stateOrProvinceName: "{{ config.openssl.certificates[cert].location.providence | default(None) }}"
     localityName: "{{ config.openssl.certificates[cert].location.city | default(None) }}"
     countryName: FI
