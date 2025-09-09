@@ -530,7 +530,7 @@
     stateOrProvinceName: "{{ config.openssl.certificates[cert].location.providence | default(None) }}"
     localityName: "{{ config.openssl.certificates[cert].location.city | default(None) }}"
     countryName: FI
-    subjectAltName: "{{ config.openssl.certificates[cert].domains }}"
+    subjectAltName: "{{ ['DNS:'] | product(config.openssl.certificates[cert].domains) | map('join') | list }}"
   loop: "{{ config.openssl.certificates.keys() | list }}"
   loop_control:
     label: "{{ cert }}"
