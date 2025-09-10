@@ -499,7 +499,7 @@
   when:
     - config.openssl.certificates[cert].location.providence is not defined
     - config.openssl.certificates[cert].location.city is not defined
-    - config.openssl.certificates[cert].domains is undefined
+    - config.openssl.certificates[cert].subjectAltName is undefined
   tags:
     - openssl
     - www
@@ -527,7 +527,7 @@
   when:
     - config.openssl.certificates[cert].location.providence is defined
     - config.openssl.certificates[cert].location.city is defined
-    - config.openssl.certificates[cert].domains is undefined
+    - config.openssl.certificates[cert].subjectAltName is undefined
   tags:
     - openssl
     - www
@@ -542,13 +542,13 @@
     stateOrProvinceName: "{{ config.openssl.certificates[cert].location.providence | default(None) }}"
     localityName: "{{ config.openssl.certificates[cert].location.city | default(None) }}"
     countryName: FI
-    subjectAltName: "{{ ['DNS:'] | product(config.openssl.certificates[cert].domains) | map('join') | list }}"
+    subjectAltName: "{{ config.openssl.certificates[cert].subjectAltName }}"
   loop: "{{ config.openssl.certificates.keys() | list }}"
   loop_control:
     label: "{{ cert }}"
     loop_var: "cert"
   when:
-    - config.openssl.certificates[cert].domains is defined
+    - config.openssl.certificates[cert].subjectAltName is defined
   tags:
     - openssl
     - www
@@ -584,7 +584,7 @@
     label: "{{ cert }}"
     loop_var: "cert"
   when:
-    - config.openssl.certificates[cert].domains is undefined
+    - config.openssl.certificates[cert].subjectAltName is undefined
     - config.openssl.certificates[cert].issuer is defined
   tags:
     - openssl
@@ -604,7 +604,7 @@
     label: "{{ cert }}"
     loop_var: "cert"
   when:
-    - config.openssl.certificates[cert].domains is defined
+    - config.openssl.certificates[cert].subjectAltName is defined
     - config.openssl.certificates[cert].issuer is defined
   tags:
     - openssl
@@ -619,7 +619,7 @@
     label: "{{ cert }}"
     loop_var: "cert"
   when:
-    - config.openssl.certificates[cert].domains is defined
+    - config.openssl.certificates[cert].subjectAltName is defined
     - config.openssl.certificates[cert].issuer is defined
   tags:
     - openssl
@@ -634,7 +634,7 @@
     label: "{{ cert }}"
     loop_var: "cert"
   when:
-    - config.openssl.certificates[cert].domains is defined
+    - config.openssl.certificates[cert].subjectAltName is defined
     - config.openssl.certificates[cert].issuer is defined
   tags:
     - openssl
