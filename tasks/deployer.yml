@@ -604,31 +604,30 @@
     - www
 
 - name: "Deployer - OpenSSL - Configure - Generate Fullchain"
-  community.crypto.certificate_complete_chain:
-    chain:
-      - "/root/data/openssl/{{ cert }}/cert.pem"
-      - "/root/data/openssl/{{ config.openssl.certificates[cert].issuer }}/cert.pem"
-    path: "/root/data/openssl/{{ cert }}/fullchain.pem"
+  ansible.builtin.copy:
+    dest: "/root/data/openssl/{{ cert }}/fullchain.pem"
+    content: "{{ lookup('ansible.builtin.file', '/root/data/openssl/{{ cert }}/cert.pem') }}{{ lookup('ansible.builtin.file', '/root/data/openssl/' + config.openssl.certificates[cert].issuer + '/cert.pem') }}{{ lookup('ansible.builtin.file', '/root/data/openssl/root/cert.pem') }}"
   loop: "{{ config.openssl.certificates.keys() | list }}"
   loop_control:
     label: "{{ cert }}"
     loop_var: "cert"
   when:
+    - config.openssl.certificates[cert].domains is defined
     - config.openssl.certificates[cert].issuer is defined
   tags:
     - openssl
     - www
 
 - name: "Deployer - OpenSSL - Configure - Generate Chain"
-  community.crypto.certificate_complete_chain:
-    chain:
-      - "/root/data/openssl/{{ config.openssl.certificates[cert].issuer }}/cert.pem"
-    path: "/root/data/openssl/{{ cert }}/chain.pem"
+  ansible.builtin.copy:
+    dest: "/root/data/openssl/{{ cert }}/chain.pem"
+    content: "{{ lookup('ansible.builtin.file', '/root/data/openssl/{{ cert }}/cert.pem') }}{{ lookup('ansible.builtin.file', '/root/data/openssl/' + config.openssl.certificates[cert].issuer + '/cert.pem') }}{{ lookup('ansible.builtin.file', '/root/data/openssl/root/cert.pem') }}"
   loop: "{{ config.openssl.certificates.keys() | list }}"
   loop_control:
     label: "{{ cert }}"
     loop_var: "cert"
   when:
+    - config.openssl.certificates[cert].domains is defined
     - config.openssl.certificates[cert].issuer is defined
   tags:
     - openssl
