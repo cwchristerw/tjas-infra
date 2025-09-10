@@ -546,9 +546,6 @@
     path: "/root/data/openssl/{{ cert }}/cert.pem"
     privatekey_path: "/root/data/openssl/{{ cert }}/privkey.pem"
     csr_path: "/root/data/openssl/{{ cert }}/csr.pem"
-    provider: "ownca"
-    ownca_path: /etc/ssl/crt/ansible_CA.crt
-    ownca_privatekey_path: /etc/ssl/private/ansible_CA.pem
     provider: selfsigned
     selfsigned_not_after: "+7300d"
   loop: "{{ config.openssl.certificates.keys() | list }}"
@@ -569,7 +566,6 @@
     provider: "ownca"
     ownca_path: "/root/data/openssl/{{ config.openssl.certificates[cert].issuer }}/cert.pem"
     ownca_privatekey_path: "/root/data/openssl/{{ config.openssl.certificates[cert].issuer }}/privkey.pem"
-    provider: ownca
     ownca_not_after: "+365d"
   loop: "{{ config.openssl.certificates.keys() | list }}"
   loop_control:
@@ -590,7 +586,6 @@
     provider: "ownca"
     ownca_path: "/root/data/openssl/{{ config.openssl.certificates[cert].issuer }}/cert.pem"
     ownca_privatekey_path: "/root/data/openssl/{{ config.openssl.certificates[cert].issuer }}/privkey.pem"
-    provider: ownca
     ownca_not_after: "+30d"
   loop: "{{ config.openssl.certificates.keys() | list }}"
   loop_control:
@@ -606,7 +601,7 @@
 - name: "Deployer - OpenSSL - Configure - Generate Fullchain"
   ansible.builtin.copy:
     dest: "/root/data/openssl/{{ cert }}/fullchain.pem"
-    content: "{{ lookup('ansible.builtin.file', '/root/data/openssl/{{ cert }}/cert.pem') }}{{ lookup('ansible.builtin.file', '/root/data/openssl/' + config.openssl.certificates[cert].issuer + '/cert.pem') }}{{ lookup('ansible.builtin.file', '/root/data/openssl/root/cert.pem') }}"
+    content: "{{ lookup('ansible.builtin.file', '/root/data/openssl/' + cert + '/cert.pem') }}\n{{ lookup('ansible.builtin.file', '/root/data/openssl/' + config.openssl.certificates[cert].issuer + '/cert.pem') }}\n{{ lookup('ansible.builtin.file', '/root/data/openssl/root/cert.pem') }}"
   loop: "{{ config.openssl.certificates.keys() | list }}"
   loop_control:
     label: "{{ cert }}"
@@ -621,7 +616,7 @@
 - name: "Deployer - OpenSSL - Configure - Generate Chain"
   ansible.builtin.copy:
     dest: "/root/data/openssl/{{ cert }}/chain.pem"
-    content: "{{ lookup('ansible.builtin.file', '/root/data/openssl/{{ cert }}/cert.pem') }}{{ lookup('ansible.builtin.file', '/root/data/openssl/' + config.openssl.certificates[cert].issuer + '/cert.pem') }}{{ lookup('ansible.builtin.file', '/root/data/openssl/root/cert.pem') }}"
+    content: "{{ lookup('ansible.builtin.file', '/root/data/openssl/' + config.openssl.certificates[cert].issuer + '/cert.pem') }}\n{{ lookup('ansible.builtin.file', '/root/data/openssl/root/cert.pem') }}"
   loop: "{{ config.openssl.certificates.keys() | list }}"
   loop_control:
     label: "{{ cert }}"
@@ -685,7 +680,7 @@
       - "{{ ansible_facts.user_dir }}/data/nginx/index.html:/usr/share/nginx/html/index.html:ro"
       - "{{ ansible_facts.user_dir }}/data/nginx/config.conf:/etc/nginx/nginx.conf:ro"
       - "{{ ansible_facts.user_dir }}/data/nginx/conf/:/etc/nginx/conf.d/:ro"
-      - "{{ ansible_facts.user_dir }}/data/openssl/:/etc/nginx/certs/:ro"
+      - "{{ ansible_facts.user_dir }}/data/openssl/{{ hostname }}/:/etc/nginx/certs/:ro"
     restart_policy: always
   when:
     - (deployerTaskN1 is defined and deployerTaskN1.changed) or deployerTaskN1 is undefined or (deployerTaskN2 is defined and deployerTaskN2.changed) or deployerTaskN2 is undefined
