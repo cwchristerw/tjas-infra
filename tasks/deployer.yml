@@ -486,6 +486,12 @@
     organizationName: "{{ config.openssl.certificates[cert].organization.name }}"
     organizationalUnitName: "{{ config.openssl.certificates[cert].organization.unit }}"
     countryName: FI
+    basicConstraints:
+      - 'CA:TRUE'
+    basic_constraints_critical: true
+    key_usage:
+      - keyCertSign
+    key_usage_critical: true
   loop: "{{ config.openssl.certificates.keys() | list }}"
   loop_control:
     label: "{{ cert }}"
@@ -508,6 +514,12 @@
     stateOrProvinceName: "{{ config.openssl.certificates[cert].location.providence }}"
     localityName: "{{ config.openssl.certificates[cert].location.city }}"
     countryName: FI
+    basicConstraints:
+      - 'CA:TRUE'
+    basic_constraints_critical: true
+    key_usage:
+      - keyCertSign
+    key_usage_critical: true
   loop: "{{ config.openssl.certificates.keys() | list }}"
   loop_control:
     label: "{{ cert }}"
