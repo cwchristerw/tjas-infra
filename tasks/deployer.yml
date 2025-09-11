@@ -88,7 +88,7 @@
     device:
       - "/dev/net/tun"
     volumes:
-      - "{{ ansible_facts.user_dir }}/data/yggdrasil/config.conf:/etc/yggdrasil-network/config.conf"
+      - "/root/data/yggdrasil/config.conf:/etc/yggdrasil-network/config.conf"
     restart_policy: always
   when:
     - (deployerTaskY1 is defined and deployerTaskY1.changed) or deployerTaskY1 is undefined or (deployerTaskY2 is defined and deployerTaskY2.changed) or deployerTaskY2 is undefined or (deployerTaskY3 is defined and deployerTaskY3.changed) or deployerTaskY3 is undefined or (deployerTaskY4 is defined and deployerTaskY4.changed) or deployerTaskY4 is undefined
@@ -689,10 +689,10 @@
     recreate: on
     network: host
     volumes:
-      - "{{ ansible_facts.user_dir }}/data/nginx/index.html:/usr/share/nginx/html/index.html:ro"
-      - "{{ ansible_facts.user_dir }}/data/nginx/config.conf:/etc/nginx/nginx.conf:ro"
-      - "{{ ansible_facts.user_dir }}/data/nginx/conf/:/etc/nginx/conf.d/:ro"
-      - "{{ ansible_facts.user_dir }}/data/openssl/{{ hostname }}/:/etc/nginx/certs/:ro"
+      - "/root/data/nginx/index.html:/usr/share/nginx/html/index.html:ro"
+      - "/root/data/nginx/config.conf:/etc/nginx/nginx.conf:ro"
+      - "/root/data/nginx/conf/:/etc/nginx/conf.d/:ro"
+      - "/root/data/openssl/{{ hostname }}/:/etc/nginx/certs/:ro"
     restart_policy: always
   when:
     - (deployerTaskN1 is defined and deployerTaskN1.changed) or deployerTaskN1 is undefined or (deployerTaskN2 is defined and deployerTaskN2.changed) or deployerTaskN2 is undefined
@@ -714,7 +714,7 @@
     recreate: on
     network: host
     volumes:
-      - "{{ ansible_facts.user_dir }}/data/uptime-kuma/:/app/data"
+      - "/root/data/uptime-kuma/:/app/data"
     restart_policy: always
     env:
       HOST: 127.0.0.1
@@ -724,3 +724,35 @@
   tags:
     - uptime-kuma
     - status
+
+- name: "Deployer - Keycloak - Pull Image"
+  containers.podman.podman_image:
+    name: quay.io/keycloak/keycloak:latest
+    tag: latest
+  register: deployerTaskC1
+
+- name: "Deployer - Keacloak - Run Container"
+  containers.podman.podman_container:
+    name: keacloak
+    image: quay.io/keycloak/keycloak:latest
+    state: started
+    recreate: on
+    network: host
+    volumes:
+      - "/root/data/keycloak/themes:/opt/keycloak/themes"
+    restart_policy: always
+    env:
+      BIND: "127.0.0.1"
+      KEYCLOAK_ADMIN: "{{ config.keycloak.admin.username }}"
+      KEYCLOAK_ADMIN_PASSWORD: "{{ config.keycloak.admin.password }}"
+      PROXY_ADDRESS_FORWARDING: "true"
+      KC_DB_URL: "jdbc:mariadb://127.0.0.1:3306/{{ config.mariadb.users['keycloak'].database }}?user={{ config.mariadb.users['keycloak'].username }}&password={{ config.mariadb.users['keycloak'].password }}"
+      KC_FEATURES: "preview"
+      JAVA_OPTS_APPEND: "-Djava.net.preferIPv4Stack=false -Djava.net.preferIPv6Addresses=true"
+  command: "start --db mariadb --hostname-strict false --proxy-headers xforwarded --http-enabled true --spi-theme-welcome-theme=pvjjk-tjas --log-level=ERROR"
+  when:
+    - (deployerTaskC1 is defined and deployerTaskC1.changed) or deployerTaskC1 is undefined
+  tags:
+    - keycloak
+    - sso
+
