@@ -393,6 +393,31 @@
     - powerdns-authorative
     - dns
 
+- name: "Deployer - PowerDNS Authorative - Configure - Create Zone"
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:8081/api/v1/servers/localhost/zones"
+    method: POST
+    headers:
+      X-API-Key: "{{ config.powerdns.apiKey }}"
+    status_code:
+      - 201
+      - 409
+    body_format: json
+    body: "{{ zone | to_json }}"
+  register: task
+  vars:
+    zone:
+      name: "tjas."
+      kind: native
+      ttl: 86400
+  changed_when:
+    - task.status == 201
+  failed_when:
+    - task.status != 201
+    - task.status != 409
+  tags:
+    - powerdns-authorative
+    - dns
 
 - name: "Deployer - PowerDNS Recursor - Configure - Create Folder"
   ansible.builtin.file:
