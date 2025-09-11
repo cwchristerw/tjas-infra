@@ -1,0 +1,61 @@
+body {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://christerwaren.fi/files/ai-generated-9087010-2.jpg") !important;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    text-align: center;
+}
+
+*, *:active, *:focus, *:hover, *:visited, *:link {
+    color: #ffffff;
+    text-decoration: none;
+    font-family: "Luckiest Guy", sans-serif;
+}
+
+@font-face {
+    font-family: "Luckiest Guy";
+    src: url('../fonts/Luckiest Guy.ttf');
+}
+
+body, main {
+    display: flex;
+    flex-direction: column;
+}
+
+p, main a {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+h1 {
+    font-size: 3em;
+    margin-bottom: 0;
+    background-image: url(../img/logo.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    color: transparent !important;
+}
+
+p {
+    margin: 0;
+}
+
+hr {
+    width: 100%;
+    margin: 0;
+}
+
+main {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+main a {
+    padding: 10px 20px;
+}
+
+main a:hover {
+    background-color: #ffffff14;
+}

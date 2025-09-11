@@ -1,0 +1,56 @@
+body {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://christerwaren.fi/files/ai-generated-9087010-2.jpg") !important;
+    background-color: #111111;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover !important;
+}
+
+@font-face {
+    font-family: "Luckiest Guy";
+    src: url('../fonts/Luckiest Guy.ttf');
+}
+
+#kc-header-wrapper {
+    font-family: "Luckiest Guy", sans-serif;
+}
+
+div.kc-logo-text.kc-logo-custom {
+    background-image: url(../img/logo.svg);
+    background-position: center;
+}
+
+@media (max-width: 767px){
+    #kc-header {
+        text-align: center;
+    }
+
+    #kc-header-wrapper {
+        color: inherit;
+        font-size: 29px;
+        padding: 62px 10px 20px;
+    }
+
+    div.kc-logo-text {
+        height: 63px;
+        width: 300px;
+        margin: auto;
+    }
+
+    .login-pf body {
+        background: url("https://christerwaren.fi/files/ai-generated-9087010-2.jpg") no-repeat center center fixed;
+    }
+
+    .login-pf-page {
+        margin: 20px;
+    }
+
+    .login-pf-page .card-pf {
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 10px;
+        border-top: 4px solid;
+        border-color: var(--pf-global--primary-color--100);
+    }
+}
