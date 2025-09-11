@@ -700,3 +700,27 @@
     - nginx
     - www
 
+- name: "Deployer - Uptime Kuma - Pull Image"
+  containers.podman.podman_image:
+    name: docker.io/louislam/uptime-kuma:latest
+    tag: latest
+  register: deployerTaskU1
+
+- name: "Deployer - Uptime Kuma - Run Container"
+  containers.podman.podman_container:
+    name: uptime-kuma
+    image: docker.io/louislam/uptime-kuma:latest
+    state: started
+    recreate: on
+    network: host
+    volumes:
+      - "{{ ansible_facts.user_dir }}/data/uptime-kuma/:/app/data"
+    restart_policy: always
+    env:
+      HOST: 127.0.0.1
+      PORT: 3001
+  when:
+    - (deployerTaskU1 is defined and deployerTaskU1.changed) or deployerTaskU1 is undefined
+  tags:
+    - uptime-kuma
+    - status
