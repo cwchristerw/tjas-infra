@@ -749,7 +749,7 @@
       KC_DB_URL: "jdbc:mariadb://127.0.0.1:3306/{{ config.mariadb.users['keycloak'].database }}?user={{ config.mariadb.users['keycloak'].username }}&password={{ config.mariadb.users['keycloak'].password }}"
       KC_FEATURES: "preview"
       JAVA_OPTS_APPEND: "-Djava.net.preferIPv4Stack=false -Djava.net.preferIPv6Addresses=true"
-  command: "start --db mariadb --hostname-strict false --proxy-headers xforwarded --http-enabled true --spi-theme-welcome-theme=pvjjk-tjas --log-level=ERROR"
+    command: "start --db mariadb --hostname-strict false --proxy-headers xforwarded --http-enabled true --spi-theme-welcome-theme=pvjjk-tjas --log-level=ERROR"
   when:
     - (deployerTaskC1 is defined and deployerTaskC1.changed) or deployerTaskC1 is undefined
   tags:
