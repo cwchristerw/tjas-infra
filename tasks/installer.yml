@@ -78,6 +78,13 @@
   tags:
     - motd
 
+- name: "Installer : Resolv.conf : Configure - Copy File"
+  ansible.builtin.template:
+    src: './files/resolv.conf'
+    dest: '/etc/resolv.conf'
+  tags:
+    - resolv
+
 - name: "Installer : Networking : Configure - Copy Configuration"
   ansible.builtin.template:
     src: './files/networking/interfaces'
