@@ -644,7 +644,7 @@
     - www
 
 - name: "Deployer - OpenSSL - Configure - Copy Certificate / Root"
-  community.crypto.x509_certificate:
+  ansible.builtin.copy:
     src: "/root/data/openssl/root/cert.pem"
     dest: "/usr/local/share/ca-certificates/root.crt"
   tags:
