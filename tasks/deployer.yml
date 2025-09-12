@@ -781,3 +781,344 @@
     - keycloak
     - sso
 
+- name: "Deployer - Nextcloud - Files - Create Folder"
+  ansible.builtin.file:
+    path: "/root/data/nextcloud/{{ folder }}"
+    state: directory
+  loop: "{{ folders }}"
+  loop_control:
+    label: "{{ folder }}"
+    loop_var: "folder"
+  vars:
+    folders:
+      - html
+      - config
+      - apps
+      - data
+  tags:
+    - nextcloud
+    - cloud
+
+- name: "Deployer - Nextcloud - Pull Image"
+  containers.podman.podman_image:
+    name: docker.io/library/nextcloud:production
+    tag: latest
+  register: deployerTaskE1
+
+- name: "Deployer - Nextcloud - Run Container"
+  containers.podman.podman_container:
+    name: nextcloud
+    image: "docker.io/library/nextcloud:production"
+    state: started
+    restart: yes
+    network_mode: host
+    volumes:
+      - "/root/data/nextcloud/html:/var/www/html"
+      - "/root/data/nextcloud/config:/var/www/html/config"
+      - "/root/data/nextcloud/apps:/var/www/html/custom_apps"
+      - "/root/data/nextcloud/data:/var/www/html/data"
+    restart_policy: always
+    env:
+      MYSQL_HOST: "127.0.0.1"
+      MYSQL_DATABASE: "{{ config.mariadb.users['nextcloud'].database }}"
+      MYSQL_USER: "{{ config.mariadb.users['nextcloud'].username }}"
+      MYSQL_PASSWORD: "{{ config.mariadb.users['nextcloud'].password }}"
+      NEXTCLOUD_ADMIN_USER: "{{ config.nextcloud.users.admin.username }}"
+      NEXTCLOUD_ADMIN_PASSWORD: "{{ config.nextcloud.users.admin.password }}"
+      NEXTCLOUD_TRUSTED_DOMAINS: "cloud.tjas"
+      OVERWRITEPROTOCOL: "https"
+  when:
+    - (deployerTaskE1 is defined and deployerTaskE1.changed) or deployerTaskE1 is undefined
+  tags:
+    - nextcloud
+    - cloud
+
+- name: "Deployer - Nextcloud - Configure - Wait"
+  ansible.builtin.shell:
+    cmd: "podman logs nextcloud"
+  register: task
+  changed_when:
+    - task.stdout.find('Nextcloud was successfully installed') != -1
+  until:
+    - "task.stdout.find('Nextcloud was successfully installed') != -1 or task.stdout.find('Searching for scripts (*.sh) to run, located in the folder: /docker-entrypoint-hooks.d/before-starting') != -1"
+  retries: 5
+  delay: 150
+  tags:
+    - nextcloud
+    - cloud
+
+- name: "Deployer - Nextcloud - Configure - Maintenance Mode : Disable"
+  containers.podman.podman_container_exec:
+    container: nextcloud
+    user: www-data
+    command: "./occ maintenance:mode --off"
+  register: task
+  ignore_errors: yes
+  changed_when:
+    - task.stdout != 'Maintenance mode already disabled'
+  retries: 5
+  delay: 150
+  tags:
+    - nextcloud
+    - cloud
+
+- name: "Deployer - Nextcloud - Configure - Upgrade"
+  containers.podman.podman_container_exec:
+    container: nextcloud
+    user: www-data
+    command: "./occ upgrade"
+  register: task
+  ignore_errors: yes
+  changed_when:
+    - task.stdout != 'No upgrade required.'
+  retries: 5
+  delay: 150
+  tags:
+    - nextcloud
+    - cloud
+
+- name: "Deployer - Nextcloud - Configure - Database : Add Missing Indices"
+  containers.podman.podman_container_exec:
+    container: nextcloud
+    user: www-data
+    command: "./occ db:add-missing-indices"
+  register: task
+  ignore_errors: yes
+  changed_when:
+    - task.stdout.find('table updated successfully') != -1
+  tags:
+    - nextcloud
+    - cloud
+
+- name: "Deployer - Nextcloud - Configure - Database : Add Missing Columns"
+  containers.podman.podman_container_exec:
+    container: nextcloud
+    user: www-data
+    command: "./occ db:add-missing-columns"
+  register: task
+  ignore_errors: yes
+  changed_when:
+    - task.stdout.find('Done') != -1
+  tags:
+    - nextcloud
+    - cloud
+
+- name: "Deployer - Nextcloud - Configure - Maintenance : Repair"
+  containers.podman.podman_container_exec:
+    container: nextcloud
+    user: www-data
+    command: "./occ maintenance:repair --include-expensive"
+  register: task
+  ignore_errors: yes
+  tags:
+    - nextcloud
+    - cloud
+
+- name: "Deployer - Nextcloud - Configure - Maintenance : Mimetypes : Database"
+  containers.podman.podman_container_exec:
+    container: nextcloud
+    user: www-data
+    command: "./occ maintenance:mimetype:update-db"
+  register: task
+  ignore_errors: yes
+  changed_when:
+    - task.stdout.find('Added mimetype') != -1
+  tags:
+    - nextcloud
+    - cloud
+
+- name: "Deployer - Nextcloud - Configure - Maintenance : Mimetypes : Javascript"
+  containers.podman.podman_container_exec:
+    container: nextcloud
+    user: www-data
+    command: "./occ maintenance:mimetype:update-js"
+  register: task
+  ignore_errors: yes
+  changed_when:
+    - task.stdout.find('mimetypelist.js is updated') != -1
+  tags:
+    - nextcloud
+    - cloud
+
+- name: "Deployer - Nextcloud - Configure - System : Configure"
+  containers.podman.podman_container_exec:
+    container: nextcloud
+    user: www-data
+    command: "./occ config:system:set {{ entry.key }} --type={% if entry.value is defined and (entry.value == 'true' or entry.value == 'false') %}boolean{% else %}string{% endif %} --value={{ entry.value }}"
+  vars:
+    entries:
+      auth.webauthn.enabled: "false"
+  loop: "{{ entries | ansible.builtin.dict2items }}"
+  loop_control:
+    label: "{{ entry.key }}"
+    loop_var: "entry"
+  register: task
+  changed_when:
+    - task.stdout.find('set to string') != -1 or task.stdout.find('set to boolean') != -1
+  ignore_errors: yes
+  tags:
+    - nextcloud
+    - cloud
+
+- name: "Deployer - Nextcloud - Configure - Applications : Disable"
+  containers.podman.podman_container_exec:
+    container: nextcloud
+    user: www-data
+    command: "./occ app:disable {{ application.identifier }}"
+  vars:
+    applications:
+      - name: "Circles"
+        identifier: "circles"
+      - name: "Contacts Interaction"
+        identifier: "contactsinteraction"
+      - name: "Federation"
+        identifier: "federation"
+      - name: "First run wizard"
+        identifier: "firstrunwizard"
+      - name: "Nextcloud announcements"
+        identifier: "nextcloud_announcements"
+      - name: "Recommendations"
+        identifier: "recommendations"
+      - name: "Support"
+        identifier: "support"
+      - name: "Usage survey"
+        identifier: "survey_client"
+      - name: "User status"
+        identifier: "user_status"
+      - name: "Weather status"
+        identifier: "weather_status"
+  loop: "{{ applications }}"
+  loop_control:
+    label: "{{ application.name }}"
+    loop_var: "application"
+  register: task
+  changed_when:
+    - task.stdout.find('No such app enabled') == -1
+  ignore_errors: yes
+  tags:
+    - nextcloud
+    - cloud
+
+- name: "Deployer - Nextcloud - Configure - Applications : Enable"
+  containers.podman.podman_container_exec:
+    container: nextcloud
+    user: www-data
+    command: "./occ app:enable {{ application.identifier }}"
+  vars:
+    applications:
+      - name: "Calendar"
+        identifier: "calendar"
+      - name: "Contacts"
+        identifier: "contacts"
+      - name: "Tasks"
+        identifier: "tasks"
+      - name: "OpenID Connect Login"
+        identifier: "oidc_login"
+  loop: "{{ applications }}"
+  loop_control:
+    label: "{{ application.name }}"
+    loop_var: "application"
+  register: task
+  changed_when:
+    - task.stdout.find('already enabled') == -1
+  ignore_errors: yes
+  tags:
+    - nextcloud
+    - cloud
+
+- name: "Deployer - Nextcloud - Configure - Applications : Install"
+  containers.podman.podman_container_exec:
+    container: nextcloud
+    user: www-data
+    command: "./occ app:install {{ application.identifier }}"
+  vars:
+    applications:
+      - name: "Custom CSS"
+        identifier: theming_customcss
+      - name: "Welcome"
+        identifier: welcome
+      - name: "Unrounded Corners"
+        identifier: unroundedcorners
+      - name: "Whiteboard"
+        identifier: whiteboard
+  loop: "{{ applications }}"
+  loop_control:
+    label: "{{ application.name }}"
+    loop_var: "application"
+  register: task
+  changed_when:
+    - task.stdout.find('already installed') == -1
+  failed_when:
+    - task.stdout.find('installed') == -1
+    - task.stdout.find('already installed') == -1
+  ignore_errors: yes
+  tags:
+    - nextcloud
+    - cloud
+
+- name: "Deployer - Nextcloud - Configure - Applications : Update"
+  containers.podman.podman_container_exec:
+    container: nextcloud
+    user: www-data
+    command: "./occ app:update --all"
+  register: task
+  changed_when:
+    - task.stdout.find('updated') != -1
+  ignore_errors: yes
+  tags:
+    - nextcloud
+    - cloud
+
+- name: "Deployer - Nextcloud - Configure - Applications : Configure - OpenID Connect Login"
+  containers.podman.podman_container_exec:
+    container: nextcloud
+    user: www-data
+    command: "./occ config:system:set {{ entry.key }} --type={% if entry.value is defined and (entry.value == 'true' or entry.value == 'false') %}boolean{% else %}string{% endif %} --value={{ entry.value }}"
+  vars:
+    entries:
+      oidc_login_client_id: "{{ config.nextcloud.integrations.sso.client.id }}"
+      oidc_login_client_secret: "{{ config.nextcloud.integrations.sso.client.secret }}"
+      oidc_login_provider_url: "https://sso.tjas/realms/master"
+      oidc_login_end_session_redirect: "true"
+      oidc_login_logout_url: "https://cloud.tjas/apps/oidc_login/oidc"
+      oidc_login_auto_redirect: "true"
+      oidc_login_redir_fallback: "true"
+      "oidc_login_attributes id": "preferred_username"
+      "oidc_login_attributes mail": "email"
+      oidc_login_scope: "'{{ config.nextcloud.integrations.sso.scope }}'"
+      overwriteprotocol: "https"
+      allow_user_to_change_display_name: "false"
+      lost_password_link: disabled
+      oidc_login_button_text: "'PVJJK TJAS'"
+      oidc_login_hide_password_form: "true"
+      "oidc_login_attributes groups": "groups"
+      oidc_login_disable_registration: "false"
+      oidc_create_groups: "true"
+      oidc_login_webdav_enabled: "true"
+      oidc_login_password_authentication: "false"
+  loop: "{{ entries | ansible.builtin.dict2items }}"
+  loop_control:
+    label: "{{ entry.key }}"
+    loop_var: "entry"
+  register: task
+  changed_when:
+    - task.stdout.find('set to string') != -1 or task.stdout.find('set to boolean') != -1
+  ignore_errors: yes
+  tags:
+    - nextcloud
+    - cloud
+
+- name: "Deployer - Nextcloud - Configure - Maintenance Mode : Disable"
+  containers.podman.podman_container_exec:
+    container: nextcloud
+    user: www-data
+    command: "./occ maintenance:mode --off"
+  register: task
+  ignore_errors: yes
+  changed_when:
+    - task.stdout != 'Maintenance mode already disabled'
+  retries: 5
+  delay: 150
+  tags:
+    - nextcloud
+    - cloud
