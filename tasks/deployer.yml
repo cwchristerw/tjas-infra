@@ -791,7 +791,7 @@
 
 - name: "Deployer - Uptime Kuma - Pull Image"
   containers.podman.podman_image:
-    name: docker.io/louislam/uptime-kuma:latest
+    name: docker.io/louislam/uptime-kuma
     tag: latest
   register: deployerTaskU1
 
@@ -851,7 +851,7 @@
 
 - name: "Deployer - Keycloak - Pull Image"
   containers.podman.podman_image:
-    name: quay.io/keycloak/keycloak:latest
+    name: quay.io/keycloak/keycloak
     tag: latest
   register: deployerTaskC2
 
@@ -900,8 +900,8 @@
 
 - name: "Deployer - Nextcloud - Pull Image"
   containers.podman.podman_image:
-    name: docker.io/library/nextcloud:production
-    tag: latest
+    name: docker.io/library/nextcloud
+    tag: production
   register: deployerTaskE1
 
 - name: "Deployer - Nextcloud - Run Container"
