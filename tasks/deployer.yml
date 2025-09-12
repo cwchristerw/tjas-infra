@@ -687,6 +687,7 @@
     ownca_path: "/root/data/openssl/{{ config.openssl.certificates[cert].issuer }}/cert.pem"
     ownca_privatekey_path: "/root/data/openssl/{{ config.openssl.certificates[cert].issuer }}/privkey.pem"
     ownca_not_after: "+30d"
+  register: deployerTaskO1
   loop: "{{ config.openssl.certificates.keys() | list }}"
   loop_control:
     label: "{{ cert }}"
@@ -783,7 +784,7 @@
       - "/root/data/openssl/{{ hostname }}/:/etc/nginx/certs/:ro"
     restart_policy: always
   when:
-    - (deployerTaskN1 is defined and deployerTaskN1.changed) or deployerTaskN1 is undefined or (deployerTaskN2 is defined and deployerTaskN2.changed) or deployerTaskN2 is undefined
+    - (deployerTaskN1 is defined and deployerTaskN1.changed) or deployerTaskN1 is undefined or (deployerTaskN2 is defined and deployerTaskN2.changed) or deployerTaskN2 is undefined or (deployerTaskO1 is defined and deployerTaskO1.changed) or deployerTaskO1 is undefined
   tags:
     - nginx
     - www
