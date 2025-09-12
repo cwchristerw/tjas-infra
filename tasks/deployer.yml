@@ -419,6 +419,54 @@
     - powerdns-authorative
     - dns
 
+- name: "Deployer - PowerDNS Authorative - Configure - Create Records"
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:8081/api/v1/servers/localhost/zones/tjas."
+    method: PATCH
+    headers:
+      X-API-Key: "{{ config.powerdns.apiKey }}"
+    status_code:
+      - 204
+    body_format: json
+    body: "{{ records | to_json }}"
+  register: task
+  vars:
+    records:
+      rrsets:
+        - name: "tjas."
+          type: A
+          ttl: 3600
+          changetype: REPLACE
+          records:
+            - content: "192.168.2.10"
+              disabled: false
+        - name: "tjas."
+          type: AAAA
+          ttl: 3600
+          changetype: REPLACE
+          records:
+            - content: "201:a6d:ce01:bbe7:2189:66fe:bdb0:17ae"
+              disabled: false
+        - name: "*.tjas."
+          type: A
+          ttl: 3600
+          changetype: REPLACE
+          records:
+            - content: "192.168.2.10"
+              disabled: false
+        - name: "*.tjas."
+          type: AAAA
+          ttl: 3600
+          changetype: REPLACE
+          records:
+            - content: "201:a6d:ce01:bbe7:2189:66fe:bdb0:17ae"
+              disabled: false
+  changed_when:
+    - task.status == 204
+  tags:
+    - powerdns-authorative
+    - dns
+
 - name: "Deployer - PowerDNS Recursor - Configure - Create Folder"
   ansible.builtin.file:
     path: "/root/data/powerdns-recursor/"
