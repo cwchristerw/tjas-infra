@@ -789,6 +789,14 @@
     - nginx
     - www
 
+- name: "Deployer - Uptime Kuma - Files - Create Folder"
+  ansible.builtin.file:
+    path: "/root/data/uptime-kuma/"
+    state: directory
+  tags:
+    - uptime-kuma
+    - status
+
 - name: "Deployer - Uptime Kuma - Pull Image"
   containers.podman.podman_image:
     name: docker.io/louislam/uptime-kuma
@@ -803,7 +811,7 @@
     recreate: on
     network: host
     volumes:
-      - "/root/data/uptime-kuma/:/app/data"
+      - "/root/data/uptime-kuma:/app/data"
     restart_policy: always
     env:
       HOST: 127.0.0.1
