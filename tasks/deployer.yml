@@ -853,6 +853,22 @@
     label: "{{ item.path }}"
   when:
     - item.state == 'file'
+    - not item.endswith('.ttf')
+  tags:
+    - keycloak
+    - sso
+
+- name: "Deployer - Keycloak - Files - Transferring Files"
+  ansible.builtin.copy:
+    src: '{{ item.src }}'
+    dest: '/root/data/keycloak/{{ item.path }}'
+  register: deployerTaskC1
+  with_filetree: './files/keycloak/'
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - item.state == 'file'
+    - item.endswith('.ttf')
   tags:
     - keycloak
     - sso
