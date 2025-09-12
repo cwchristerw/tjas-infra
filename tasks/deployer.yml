@@ -832,8 +832,8 @@
     restart_policy: always
     env:
       BIND: "127.0.0.1"
-      KEYCLOAK_ADMIN: "{{ config.keycloak.admin.username }}"
-      KEYCLOAK_ADMIN_PASSWORD: "{{ config.keycloak.admin.password }}"
+      KEYCLOAK_ADMIN: "{{ config.keycloak.users.admin.username }}"
+      KEYCLOAK_ADMIN_PASSWORD: "{{ config.keycloak.users.admin.password }}"
       PROXY_ADDRESS_FORWARDING: "true"
       KC_DB_URL: "jdbc:mariadb://127.0.0.1:3306/{{ config.mariadb.users['keycloak'].database }}?user={{ config.mariadb.users['keycloak'].username }}&password={{ config.mariadb.users['keycloak'].password }}"
       KC_FEATURES: "preview"
