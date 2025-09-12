@@ -814,11 +814,46 @@
     - uptime-kuma
     - status
 
+- name: "Deployer - Keycloak - Files - Create Folder"
+  ansible.builtin.file:
+    path: "/root/data/keycloak/"
+    state: directory
+  tags:
+    - keycloak
+    - sso
+
+- name: "Deployer - Keycloak - Files - Create Subfolders"
+  ansible.builtin.file:
+    dest: '/root/data/keycloak/{{ item.path }}'
+    state: directory
+  with_filetree: './files/keycloak/'
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - item.state == 'directory'
+  tags:
+    - keycloak
+    - sso
+
+- name: "Deployer - Keycloak - Files - Generating & Transferring Files"
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '/root/data/keycloak/{{ item.path }}'
+  register: deployerTaskC1
+  with_filetree: './files/keycloak/'
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - item.state == 'file'
+  tags:
+    - keycloak
+    - sso
+
 - name: "Deployer - Keycloak - Pull Image"
   containers.podman.podman_image:
     name: quay.io/keycloak/keycloak:latest
     tag: latest
-  register: deployerTaskC1
+  register: deployerTaskC2
 
 - name: "Deployer - Keacloak - Run Container"
   containers.podman.podman_container:
@@ -840,7 +875,7 @@
       JAVA_OPTS_APPEND: "-Djava.net.preferIPv4Stack=false -Djava.net.preferIPv6Addresses=true"
     command: "start --db mariadb --hostname-strict false --proxy-headers xforwarded --http-enabled true --spi-theme-welcome-theme=pvjjk-tjas --log-level=ERROR"
   when:
-    - (deployerTaskC1 is defined and deployerTaskC1.changed) or deployerTaskC1 is undefined
+    - (deployerTaskC1 is defined and deployerTaskC1.changed) or deployerTaskC1 is undefined or (deployerTaskC2 is defined and deployerTaskC2.changed) or deployerTaskC2 is undefined
   tags:
     - keycloak
     - sso
