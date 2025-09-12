@@ -643,6 +643,21 @@
     - openssl
     - www
 
+- name: "Deployer - OpenSSL - Configure - Copy Certificate / Root"
+  community.crypto.x509_certificate:
+    src: "/root/data/openssl/root/cert.pem"
+    dest: "/usr/local/share/ca-certificates/root.crt"
+  tags:
+    - openssl
+    - www
+
+- name: "Deployer - OpenSSL - Configure - CA Certificates Update"
+  ansible.builtin.command:
+    cmd: update-ca-certificates
+  tags:
+    - openssl
+    - www
+
 - name: "Deployer - OpenSSL - Configure - Generate Certificate / Intermediate"
   community.crypto.x509_certificate:
     path: "/root/data/openssl/{{ cert }}/cert.pem"
