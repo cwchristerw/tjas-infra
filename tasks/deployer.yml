@@ -805,12 +805,21 @@
     network: host
     volumes:
       - "/root/data/uptime-kuma:/app/data"
+      - "/root/data/openssl/root/cert.pem:/usr/local/share/ca-certificates/root.crt"
     restart_policy: always
     env:
       HOST: 127.0.0.1
       PORT: 3001
   when:
     - (deployerTaskU1 is defined and deployerTaskU1.changed) or deployerTaskU1 is undefined
+  tags:
+    - uptime-kuma
+    - status
+
+- name: "Deployer - Uptime Kuma - Configure - CA Certificates Update"
+  containers.podman.podman_container_exec:
+    name: uptime-kuma
+    command: "update-ca-certificates"
   tags:
     - uptime-kuma
     - status
