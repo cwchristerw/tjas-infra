@@ -922,11 +922,38 @@
     - nextcloud
     - cloud
 
+- name: "Deployer - Nextcloud - Files - Create Subfolders"
+  ansible.builtin.file:
+    dest: '/root/data/nextcloud/{{ item.path }}'
+    state: directory
+  with_filetree: './files/nextcloud/'
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - item.state == 'directory'
+  tags:
+    - nextcloud
+    - cloud
+
+- name: "Deployer - Nextcloud - Files - Generating & Transferring Files"
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '/root/data/nextcloud/{{ item.path }}'
+  register: deployerTaskE1
+  with_filetree: './files/nextcloud/'
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - item.state == 'file'
+  tags:
+    - nextcloud
+    - cloud
+
 - name: "Deployer - Nextcloud - Pull Image"
   containers.podman.podman_image:
     name: docker.io/library/nextcloud
     tag: production
-  register: deployerTaskE1
+  register: deployerTaskE2
 
 - name: "Deployer - Nextcloud - Run Container"
   containers.podman.podman_container:
@@ -940,6 +967,8 @@
       - "/root/data/nextcloud/config:/var/www/html/config"
       - "/root/data/nextcloud/apps:/var/www/html/custom_apps"
       - "/root/data/nextcloud/data:/var/www/html/data"
+      - "/root/data/nextcloud/config/apache2/ports.conf:/etc/apache2/ports.conf:ro"
+      - "/root/data/nextcloud/config/apache2/sites-enabled/000-default.conf:/etc/apache2/sites-enabled/000-default.conf:ro"
     restart_policy: always
     env:
       MYSQL_HOST: "127.0.0.1"
@@ -951,7 +980,7 @@
       NEXTCLOUD_TRUSTED_DOMAINS: "cloud.tjas"
       OVERWRITEPROTOCOL: "https"
   when:
-    - (deployerTaskE1 is defined and deployerTaskE1.changed) or deployerTaskE1 is undefined
+    - (deployerTaskE1 is defined and deployerTaskE1.changed) or deployerTaskE1 is undefined or (deployerTaskE2 is defined and deployerTaskE2.changed) or deployerTaskE2 is undefined
   tags:
     - nextcloud
     - cloud
