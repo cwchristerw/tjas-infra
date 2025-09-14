@@ -1003,7 +1003,7 @@
 
 - name: "Deployer - Nextcloud - Configure - Maintenance Mode : Disable"
   containers.podman.podman_container_exec:
-    container: nextcloud
+    name: nextcloud
     user: www-data
     command: "./occ maintenance:mode --off"
   register: task
@@ -1018,7 +1018,7 @@
 
 - name: "Deployer - Nextcloud - Configure - Upgrade"
   containers.podman.podman_container_exec:
-    container: nextcloud
+    name: nextcloud
     user: www-data
     command: "./occ upgrade"
   register: task
@@ -1033,7 +1033,7 @@
 
 - name: "Deployer - Nextcloud - Configure - Database : Add Missing Indices"
   containers.podman.podman_container_exec:
-    container: nextcloud
+    name: nextcloud
     user: www-data
     command: "./occ db:add-missing-indices"
   register: task
@@ -1046,7 +1046,7 @@
 
 - name: "Deployer - Nextcloud - Configure - Database : Add Missing Columns"
   containers.podman.podman_container_exec:
-    container: nextcloud
+    name: nextcloud
     user: www-data
     command: "./occ db:add-missing-columns"
   register: task
@@ -1059,7 +1059,7 @@
 
 - name: "Deployer - Nextcloud - Configure - Maintenance : Repair"
   containers.podman.podman_container_exec:
-    container: nextcloud
+    name: nextcloud
     user: www-data
     command: "./occ maintenance:repair --include-expensive"
   register: task
@@ -1070,7 +1070,7 @@
 
 - name: "Deployer - Nextcloud - Configure - Maintenance : Mimetypes : Database"
   containers.podman.podman_container_exec:
-    container: nextcloud
+    name: nextcloud
     user: www-data
     command: "./occ maintenance:mimetype:update-db"
   register: task
@@ -1083,7 +1083,7 @@
 
 - name: "Deployer - Nextcloud - Configure - Maintenance : Mimetypes : Javascript"
   containers.podman.podman_container_exec:
-    container: nextcloud
+    name: nextcloud
     user: www-data
     command: "./occ maintenance:mimetype:update-js"
   register: task
@@ -1096,7 +1096,7 @@
 
 - name: "Deployer - Nextcloud - Configure - System : Configure"
   containers.podman.podman_container_exec:
-    container: nextcloud
+    name: nextcloud
     user: www-data
     command: "./occ config:system:set {{ entry.key }} --type={% if entry.value is defined and (entry.value == 'true' or entry.value == 'false') %}boolean{% else %}string{% endif %} --value={{ entry.value }}"
   vars:
@@ -1116,7 +1116,7 @@
 
 - name: "Deployer - Nextcloud - Configure - Applications : Disable"
   containers.podman.podman_container_exec:
-    container: nextcloud
+    name: nextcloud
     user: www-data
     command: "./occ app:disable {{ application.identifier }}"
   vars:
@@ -1155,7 +1155,7 @@
 
 - name: "Deployer - Nextcloud - Configure - Applications : Enable"
   containers.podman.podman_container_exec:
-    container: nextcloud
+    name: nextcloud
     user: www-data
     command: "./occ app:enable {{ application.identifier }}"
   vars:
@@ -1182,7 +1182,7 @@
 
 - name: "Deployer - Nextcloud - Configure - Applications : Install"
   containers.podman.podman_container_exec:
-    container: nextcloud
+    name: nextcloud
     user: www-data
     command: "./occ app:install {{ application.identifier }}"
   vars:
@@ -1212,7 +1212,7 @@
 
 - name: "Deployer - Nextcloud - Configure - Applications : Update"
   containers.podman.podman_container_exec:
-    container: nextcloud
+    name: nextcloud
     user: www-data
     command: "./occ app:update --all"
   register: task
@@ -1225,7 +1225,7 @@
 
 - name: "Deployer - Nextcloud - Configure - Applications : Configure - OpenID Connect Login"
   containers.podman.podman_container_exec:
-    container: nextcloud
+    name: nextcloud
     user: www-data
     command: "./occ config:system:set {{ entry.key }} --type={% if entry.value is defined and (entry.value == 'true' or entry.value == 'false') %}boolean{% else %}string{% endif %} --value={{ entry.value }}"
   vars:
@@ -1264,7 +1264,7 @@
 
 - name: "Deployer - Nextcloud - Configure - Maintenance Mode : Disable"
   containers.podman.podman_container_exec:
-    container: nextcloud
+    name: nextcloud
     user: www-data
     command: "./occ maintenance:mode --off"
   register: task
