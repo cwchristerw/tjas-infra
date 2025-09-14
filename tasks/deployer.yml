@@ -853,7 +853,7 @@
     label: "{{ item.path }}"
   when:
     - item.state == 'file'
-    - not item.endswith('.ttf')
+    - not item.path.endswith('.ttf')
   tags:
     - keycloak
     - sso
@@ -868,7 +868,7 @@
     label: "{{ item.path }}"
   when:
     - item.state == 'file'
-    - item.endswith('.ttf')
+    - item.path.endswith('.ttf')
   tags:
     - keycloak
     - sso
@@ -881,7 +881,7 @@
 
 - name: "Deployer - Keacloak - Run Container"
   containers.podman.podman_container:
-    name: keacloak
+    name: keycloak
     image: quay.io/keycloak/keycloak:latest
     state: started
     recreate: on
