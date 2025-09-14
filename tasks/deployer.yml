@@ -857,7 +857,7 @@
   ansible.builtin.copy:
     src: '{{ item.src }}'
     dest: '/root/data/keycloak/{{ item.path }}'
-  register: deployerTaskC1
+  register: deployerTaskC2
   with_filetree: './files/keycloak/'
   loop_control:
     label: "{{ item.path }}"
@@ -872,7 +872,7 @@
   containers.podman.podman_image:
     name: quay.io/keycloak/keycloak
     tag: latest
-  register: deployerTaskC2
+  register: deployerTaskC3
 
 - name: "Deployer - Keacloak - Run Container"
   containers.podman.podman_container:
@@ -894,7 +894,7 @@
       JAVA_OPTS_APPEND: "-Djava.net.preferIPv4Stack=false -Djava.net.preferIPv6Addresses=true"
     command: "start --db mariadb --hostname-strict false --proxy-headers xforwarded --http-enabled true --spi-theme-welcome-theme=pvjjk-tjas --log-level=ERROR"
   when:
-    - (deployerTaskC1 is defined and deployerTaskC1.changed) or deployerTaskC1 is undefined or (deployerTaskC2 is defined and deployerTaskC2.changed) or deployerTaskC2 is undefined
+    - (deployerTaskC1 is defined and deployerTaskC1.changed) or deployerTaskC1 is undefined or (deployerTaskC2 is defined and deployerTaskC2.changed) or deployerTaskC2 is undefined or (deployerTaskC3 is defined and deployerTaskC3.changed) or deployerTaskC3 is undefined
   tags:
     - keycloak
     - sso
