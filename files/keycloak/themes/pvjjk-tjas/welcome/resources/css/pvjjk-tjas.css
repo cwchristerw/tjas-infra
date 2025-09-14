@@ -11,6 +11,7 @@ body {
     color: #ffffff;
     text-decoration: none;
     font-family: "Luckiest Guy", sans-serif;
+    text-transform: uppercase;
 }
 
 @font-face {
@@ -29,7 +30,7 @@ p, main a {
 }
 
 h1 {
-    font-size: 3em;
+    font-size: 12em;
     margin-bottom: 0;
     background-image: url(../img/logo.svg);
     background-repeat: no-repeat;

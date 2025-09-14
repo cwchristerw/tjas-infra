@@ -13,6 +13,7 @@ body {
 
 #kc-header-wrapper {
     font-family: "Luckiest Guy", sans-serif;
+    text-transform: uppercase;
 }
 
 div.kc-logo-text.kc-logo-custom {
