@@ -121,7 +121,6 @@
     restart_policy: always
     env:
       MYSQL_ROOT_PASSWORD: "{{ config.mariadb.users.root.password }}"
-  register: deployerTaskM2
   when:
     - (deployerTaskM1 is defined and deployerTaskM1.changed) or deployerTaskM1 is undefined
   tags:
@@ -133,8 +132,6 @@
     host: "127.0.0.1"
     port: "3306"
     delay: 10
-  when:
-    - (deployerTaskM2 is defined and deployerTaskM2.changed) or deployerTaskM2 is undefined
   tags:
     - mariadb
     - database
@@ -146,8 +143,6 @@
   register: task
   ignore_errors: yes
   changed_when: task.stdout.find("This installation of MariaDB is already upgraded") == -1
-  when:
-    - (deployerTaskM2 is defined and deployerTaskM2.changed) or deployerTaskM2 is undefined
   tags:
     - mariadb
     - database
@@ -166,7 +161,6 @@
     label: "{{ user }}"
     loop_var: "user"
   when:
-    - (deployerTaskM2 is defined and deployerTaskM2.changed) or deployerTaskM2 is undefined
     - config.mariadb.users is defined
     - config.mariadb.users[user] is defined
     - config.mariadb.users[user].username is defined
@@ -187,7 +181,6 @@
     label: "{{ user }}"
     loop_var: "user"
   when:
-    - (deployerTaskM2 is defined and deployerTaskM2.changed) or deployerTaskM2 is undefined
     - config.mariadb.users is defined
     - config.mariadb.users[user] is defined
     - config.mariadb.users[user].username is defined
