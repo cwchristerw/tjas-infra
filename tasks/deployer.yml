@@ -899,6 +899,238 @@
     - keycloak
     - sso
 
+- name: "Deployer - Keacloak - Configure - Wait"
+  ansible.builtin.wait_for:
+    host: "127.0.0.1"
+    port: 8080
+    delay: 15
+  tags:
+    - keycloak
+    - sso
+
+- name: "Deployer - Keacloak - Configure - Users : Create"
+  community.general.keycloak_user:
+    auth_keycloak_url: "http://127.0.0.1:8080"
+    auth_realm: master
+    auth_username: "{{ config.keycloak.users.admin.username }}"
+    auth_password: "{{ config.keycloak.users.admin.password }}"
+    realm: "master"
+    username: "{{ config.keycloak.users[username].username }}"
+    emailVerified: on
+    credentials:
+      - type: password
+        value: "{{ config.keycloak.users[username].password }}"
+        temporary: false
+    enabled: on
+    state: present
+  loop: "{{ config.keycloak.users.keys() | list }}"
+  loop_control:
+    label: "{{ username }}"
+    loop_var: username
+  tags:
+    - keycloak
+    - sso
+
+- name: "Deployer - Keacloak - Configure - Realms : Modify"
+  community.general.keycloak_realm:
+    auth_keycloak_url: "http://127.0.0.1:8080"
+    auth_realm: master
+    auth_username: "{{ config.keycloak.users.admin.username }}"
+    auth_password: "{{ config.keycloak.users.admin.password }}"
+    realm: "master"
+    displayName: "PVJJK TJAS"
+    display_name_html: ""
+    enabled: on
+    state: present
+  tags:
+    - keycloak
+    - sso
+
+- name: "Deployer - Keacloak - Configure - Realms : Configure - Login"
+  community.general.keycloak_realm:
+    auth_keycloak_url: "http://127.0.0.1:8080"
+    auth_realm: master
+    auth_username: "{{ config.keycloak.users.admin.username }}"
+    auth_password: "{{ config.keycloak.users.admin.password }}"
+    realm: "master"
+    rememberMe: on
+    loginWithEmailAllowed: off
+    duplicateEmailsAllowed: on
+    verifyEmail: off
+    editUsernameAllowed: on
+  tags:
+    - keycloak
+    - sso
+
+- name: "Deployer - Keacloak - Configure - Realms : Configure - Themes"
+  community.general.keycloak_realm:
+    auth_keycloak_url: "http://127.0.0.1:8080"
+    auth_realm: master
+    auth_username: "{{ config.keycloak.users.admin.username }}"
+    auth_password: "{{ config.keycloak.users.admin.password }}"
+    realm: "master"
+    loginTheme: "pvjjk-tjas"
+  tags:
+    - keycloak
+    - sso
+
+- name: "Deployer - Keacloak - Configure - Realms : Configure - Client Scopes"
+  community.general.keycloak_clientscope:
+    auth_keycloak_url: "http://127.0.0.1:8080"
+    auth_realm: master
+    auth_username: "{{ config.keycloak.users.admin.username }}"
+    auth_password: "{{ config.keycloak.users.admin.password }}"
+    realm: "master"
+    name: "groups"
+    protocol: openid-connect
+    protocol_mappers:
+      - name: groups
+        protocol: openid-connect
+        protocolMapper: oidc-group-membership-mapper
+        config:
+          claim.name: groups
+          userinfo.token.claim: "true"
+    state: present
+  tags:
+    - keycloak
+    - sso
+
+- name: "Deployer - Keacloak - Configure - Realms : Configure - Client Scopes : Types"
+  community.general.keycloak_clientscope_type:
+    auth_keycloak_url: "http://127.0.0.1:8080"
+    auth_realm: master
+    auth_username: "{{ config.keycloak.users.admin.username }}"
+    auth_password: "{{ config.keycloak.users.admin.password }}"
+    realm: "master"
+    default_clientscopes: "{{ default }}"
+    optional_clientscopes: "{{ optional }}"
+  vars:
+    default:
+      - acr
+      - basic
+      - email
+      - profile
+      - role_list
+      - roles
+      - saml_organization
+      - web-origins
+    optional:
+      - address
+      - groups
+      - microprofile-jwt
+      - offline_access
+      - organization
+      - phone
+  tags:
+    - keycloak
+    - sso
+
+- name: "Deployer - Keacloak - Configure - Realms : Configure - User Profile"
+  community.general.keycloak_userprofile:
+    auth_keycloak_url: "http://127.0.0.1:8080"
+    auth_realm: master
+    auth_username: "{{ config.keycloak.users.admin.username }}"
+    auth_password: "{{ config.keycloak.users.admin.password }}"
+    realm: "master"
+    config:
+      kc_user_profile_config:
+        - unmanagedAttributePolicy: ADMIN_EDIT
+    state: present
+  tags:
+    - keycloak
+    - sso
+
+- name: "Deployer - Keacloak - Configure - Users : Configure - Attributes"
+  community.general.keycloak_user:
+    auth_keycloak_url: "http://127.0.0.1:8080"
+    auth_realm: master
+    auth_username: "{{ config.keycloak.users.admin.username }}"
+    auth_password: "{{ config.keycloak.users.admin.password }}"
+    realm: "master"
+    username: "{{ config.keycloak.users.admin.username }}"
+    emailVerified: on
+    attributes:
+      - name: is_temporary_admin
+        values: "false"
+    state: present
+  tags:
+    - keycloak
+    - sso
+
+- name: "Deployer - Keacloak - Configure - Realms : Configure - Clients"
+  community.general.keycloak_client:
+    auth_keycloak_url: "http://127.0.0.1:8080"
+    auth_realm: master
+    auth_username: "{{ config.keycloak.users.admin.username }}"
+    auth_password: "{{ config.keycloak.users.admin.password }}"
+    realm: "master"
+    client_id: "{{ sso.client.id }}"
+    secret: "{{ sso.client.secret }}"
+    name: "{{ sso.client.name }}"
+    publicClient: false
+    baseUrl: "{{ sso.client.url.base }}"
+    redirectUris: "{{ sso.client.url.redirect }}"
+    default_client_scopes: "{{ default | ansible.builtin.difference(sso.scope.split(' ')[1:]) }}"
+    optional_client_scopes: "{{ optional + sso.scope.split(' ')[1:] }}"
+    state: present
+  vars:
+    default:
+      - acr
+      - basic
+      - email
+      - profile
+      - role_list
+      - roles
+      - saml_organization
+      - web-origins
+    optional:
+      - address
+      - microprofile-jwt
+      - offline_access
+      - organization
+      - phone
+  loop: "{{ hostvars | json_query('*.config[].*.integrations.sso') | flatten(1)  }}"
+  loop_control:
+    label: "{{ sso.client.id }}"
+    loop_var: "sso"
+  tags:
+    - keycloak
+    - sso
+
+- name: "Deployer - Keacloak - Configure - Realms : Configure - Clients : Scopes"
+  community.general.keycloak_clientscope_type:
+    auth_keycloak_url: "http://127.0.0.1:8080"
+    auth_realm: master
+    auth_username: "{{ config.keycloak.users.admin.username }}"
+    auth_password: "{{ config.keycloak.users.admin.password }}"
+    realm: "master"
+    client_id: "{{ sso.client.id }}"
+    default_clientscopes: "{{ default | ansible.builtin.difference(sso.scope.split(' ')[1:]) }}"
+    optional_clientscopes: "{{ optional + sso.scope.split(' ')[1:] }}"
+  vars:
+    default:
+      - acr
+      - basic
+      - email
+      - profile
+      - role_list
+      - roles
+      - saml_organization
+      - web-origins
+    optional:
+      - address
+      - microprofile-jwt
+      - offline_access
+      - organization
+      - phone
+  loop: "{{ hostvars | json_query('*.config[].*.integrations.sso') | flatten(1)  }}"
+  loop_control:
+    label: "{{ sso.client.id }}"
+    loop_var: "sso"
+  tags:
+    - keycloak
+    - sso
+
 - name: "Deployer - Nextcloud - Files - Create Folder"
   ansible.builtin.file:
     path: "/root/data/nextcloud/{{ folder }}"
