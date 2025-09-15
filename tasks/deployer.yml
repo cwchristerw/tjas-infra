@@ -987,7 +987,7 @@
   changed_when:
     - task.stdout.find('Nextcloud was successfully installed') != -1
   until:
-    - "task.stdout.find('Nextcloud was successfully installed') != -1 or task.stdout.find('Searching for scripts (*.sh) to run, located in the folder: /docker-entrypoint-hooks.d/before-starting') != -1"
+    - task.stdout.find('Nextcloud was successfully installed') != -1 or task.stdout.find('Searching for scripts (*.sh) to run, located in the folder') != -1
   retries: 5
   delay: 150
   tags:
