@@ -18,7 +18,7 @@ echo "
    \`--'    \`-----'   \`--' \`--' \`-----'
 "
 echo "
-TIETOJÄRJESTELMÄASENTAJIEN INTRA
+TIETOJÄRJESTELMÄASENTAJIEN INFRA
 MAINTAINER SCRIPT
 "
 echo -n "${normal}"

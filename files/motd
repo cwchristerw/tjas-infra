@@ -15,9 +15,9 @@
            |_|
 
 
-{{ location | upper }}
 TIETOJÄRJESTELMÄASENTAJIEN INTRA
 {{ hostname | upper }}
+{{ location | upper }}
 
 Palvelimen hallinta on automatisoitu. Manuaaliset muutokset saatetaan
 ylikirjoittaa automatisoidusti.

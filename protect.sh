@@ -18,23 +18,23 @@ echo "
    \`--'    \`-----'   \`--' \`--' \`-----'
 "
 echo "
-TIETOJÄRJESTELMÄASENTAJIEN INTRA
+TIETOJÄRJESTELMÄASENTAJIEN INFRA
 PROTECT SCRIPT
 "
 echo -n "${normal}"
 action=$1
 
 encrypt() {
-    execute "ansible-vault encrypt --vault-id $1@vault/$1" $1
+    execute "ansible-vault encrypt --vault-id infra@vault/infra"
 }
 
 decrypt() {
-    execute "ansible-vault decrypt --vault-id $1@vault/$1" $1
+    execute "ansible-vault decrypt --vault-id infra@vault/infra"
 }
 
 list() {
     i=0
-    for file in inventories/$1/group_vars/* inventories/$1/host_vars/*;
+    for file in inventories/hosts.yml inventories/host_vars/*;
     do
         i=$((i + 1))
         echo $i")"$file
@@ -43,7 +43,7 @@ list() {
 
 execute() {
 i=0
-for file in inventories/$2/group_vars/* inventories/$2/host_vars/*;
+for file in inventories/hosts.yml inventories/host_vars/*;
     do
         i=$((i + 1))
         echo $i")"$file
@@ -55,15 +55,15 @@ for file in inventories/$2/group_vars/* inventories/$2/host_vars/*;
 case $action in
     encrypt)
         echo "${underline}Encrypting...${nounderline}"
-        encrypt pvjjk-1vos-niinisalo
+        encrypt
         ;;
     decrypt)
         echo "${underline}Decrypting...${nounderline}"
-        decrypt pvjjk-1vos-niinisalo
+        decrypt
         ;;
     list)
         echo "${underline}Listing...${nounderline}"
-        list pvjjk-1vos-niinisalo
+        list
         ;;
     *)
         echo "${underline}HELP${nounderline}"

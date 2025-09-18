@@ -1,0 +1,36 @@
+---
+- name: "Migrater - Copy Secrets"
+  ansible.builtin.copy:
+    src: "{{ file.src }}"
+    dest: "{{ file.dest }}"
+  vars:
+    files:
+      - src: /root/.ssh/keys/{{ location | lower | replace('.', '') | replace(' ', '-') }}/infra
+        dest: /root/.ssh/keys/infra
+      - src: /root/.ansible/vault/{{ location | lower | replace('.', '') | replace(' ', '-') }}/infra
+        dest: /root/.ansible/vault/infra
+
+- name: "Migrater - Schedule : Maintenance"
+  ansible.builtin.cron:
+    name: "Tietojärjestelmäasentajien Infra - Maintenance"
+    hour: "*/3"
+    minute: "0"
+    job: "/root/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/infra --accept-host-key --private-key /root/.ssh/keys/infra --vault-password-file /root/.ansible/vault/infra tasks.yml -t maintenance"
+
+- name: "Migrater - Schedule : Maintenance"
+  ansible.builtin.cron:
+    name: "Tietojärjestelmäasentajien Infra - Maintenance"
+    minute: "*/5"
+    job: "/root/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/infra --accept-host-key --private-key /root/.ssh/keys/infra --vault-password-file /root/.ansible/vault/infra tasks.yml -t deployer"
+
+- name: "Migrater - Schedule : Deployer"
+  ansible.builtin.cron:
+    name: "{{ location | upper }} - Infra - Deployer"
+    state: absent
+
+- name: "Migrater - Schedule : Maintenance"
+  ansible.builtin.cron:
+    name: "{{ location | upper }} - Infra - Maintenance"
+    state: absent
+  tags:
+    - cron

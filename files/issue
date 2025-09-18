@@ -12,9 +12,9 @@
    `--'    `-----'   `--' `--' `-----'
 
 
-{{ location | upper }}
 TIETOJÄRJESTELMÄASENTAJIEN INTRA
 {{ hostname | upper }}
+{{ location | upper }}
 
 Made by
 Jääkäri Warén

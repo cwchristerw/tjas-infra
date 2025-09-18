@@ -1,4 +1,10 @@
 ---
+- name: "Migrater"
+  ansible.builtin.import_tasks:
+    file: 'tasks/migrater.yml'
+  tags:
+    - migrater
+
 - name: "Deployer - SSH - Add Authorized Keys"
   ansible.builtin.template:
     src: './files/ssh/authorized_keys'
@@ -68,7 +74,7 @@
 
 - name: "Deployer - Yggdrasil - Build Image"
   containers.podman.podman_image:
-    name: pvjjk-1vos-niinisalo/yggdrasil
+    name: tjas-infra/yggdrasil
     tag: latest
     path: "/root/data/yggdrasil"
     build:
@@ -79,7 +85,7 @@
 - name: "Deployer - Yggdrasil - Run Container"
   containers.podman.podman_container:
     name: yggdrasil
-    image: pvjjk-1vos-niinisalo/yggdrasil:latest
+    image: tjas-infra/yggdrasil:latest
     state: started
     recreate: on
     network: host

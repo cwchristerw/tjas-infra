@@ -61,16 +61,16 @@ ti-header "Asennetaan Ansible kokoelmat..."
 $HOME/.venv/ansible/bin/ansible-galaxy collection install ansible.posix containers.podman --upgrade
 echo -e "\n\n"
 
-mkdir -p $HOME/.ssh/keys/pvjjk-1vos-niinisalo &> /dev/null
-if [[ ! -f $HOME/.ssh/keys/pvjjk-1vos-niinisalo/infra ]]
+mkdir -p $HOME/.ssh/keys &> /dev/null
+if [[ ! -f $HOME/.ssh/keys/infra ]]
 then
     ti-header "Generoidaan SSH-avain Infra-repon käyttöön..."
-    ssh-keygen -f $HOME/.ssh/keys/pvjjk-1vos-niinisalo/infra -t ed25519 -N '' -C $(hostname --fqdn)
+    ssh-keygen -f $HOME/.ssh/keys/infra -t ed25519 -N '' -C $(hostname --fqdn)
     echo -e "\n\n"
 fi
 
 ti-header "Lisää SSH-avain Infra-repon käyttöön..."
-cat $HOME/.ssh/keys/pvjjk-1vos-niinisalo/infra.pub
+cat $HOME/.ssh/keys/infra.pub
 
 echo -n "Onko avain lisätty Github-repoon? [K/E]"
 while [[ -z $SSHKEY_QUESTION || ! -z $SSHKEY_QUESTION && $SSHKEY_QUESTION != "K" ]]
@@ -80,7 +80,7 @@ done
 echo -e "\n\n"
 
 mkdir -p $HOME/.ansible/vault &> /dev/null
-if [[ ! -f $HOME/.ansible/vault/pvjjk-1vos-niinisalo ]]
+if [[ ! -f $HOME/.ansible/vault/infra ]]
 then
     ti-header "Syötä Ansible Vaultin salasana..."
     echo -n "Salasana: "
@@ -90,14 +90,14 @@ then
 
         if [[ ! -z $VAULT_PASSWORD ]]
         then
-            echo "$VAULT_PASSWORD" > $HOME/.ansible/vault/pvjjk-1vos-niinisalo
+            echo "$VAULT_PASSWORD" > $HOME/.ansible/vault/infra
         fi
     done
     echo -e "\n\n"
 fi
 
 ti-header "Suoritetaan Infran asennus..."
-$HOME/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d $HOME/.ansible/pull/pvjjk-1vos-niinisalo/infra --accept-host-key --private-key $HOME/.ssh/keys/pvjjk-1vos-niinisalo/infra --vault-password-file $HOME/.ansible/vault/pvjjk-1vos-niinisalo tasks.yml -t installer
+$HOME/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d $HOME/.ansible/pull/infra --accept-host-key --private-key $HOME/.ssh/keys/infra --vault-password-file $HOME/.ansible/vault/infra tasks.yml -t installer
 echo -e "\n\n"
 
 echo "

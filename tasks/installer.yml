@@ -247,17 +247,17 @@
 
 - name: "Installer : Schedule : Maintenance"
   ansible.builtin.cron:
-    name: "{{ location | upper }} - Infra - Maintenance"
+    name: "Tietojärjestelmäasentajien Infra - Maintenance"
     hour: "*/3"
     minute: "0"
-    job: "/root/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/pvjjk-1vos-niinisalo/infra --accept-host-key --private-key /root/.ssh/keys/pvjjk-1vos-niinisalo/infra --vault-password-file /root/.ansible/vault/pvjjk-1vos-niinisalo tasks.yml -t maintenance"
+    job: "/root/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/infra --accept-host-key --private-key /root/.ssh/keys/infra --vault-password-file /root/.ansible/vault/infra tasks.yml -t maintenance"
   tags:
     - cron
 
 - name: "Installer : Schedule : Deployer"
   ansible.builtin.cron:
-    name: "{{ location | upper }} - Infra - Deployer"
+    name: "Tietojärjestelmäasentajien Infra - Deployer"
     minute: "*/5"
-    job: "/root/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/pvjjk-1vos-niinisalo/infra --accept-host-key --private-key /root/.ssh/keys/pvjjk-1vos-niinisalo/infra --vault-password-file /root/.ansible/vault/pvjjk-1vos-niinisalo tasks.yml -t deployer"
+    job: "/root/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/infra --accept-host-key --private-key /root/.ssh/keys/infra --vault-password-file /root/.ansible/vault/infra tasks.yml -t deployer"
   tags:
     - cron

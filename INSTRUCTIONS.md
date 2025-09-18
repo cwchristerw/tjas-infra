@@ -1,4 +1,4 @@
-# Tietojärjestelmäasentajien Infra
+# TIETOJÄRJESTELMÄASENTAJIEN INFRA
 ## Ylläpitäjän ohjeet
 
 **Työaseman asennus**
@@ -155,7 +155,7 @@ banner motd ^C
     `--'    `-----'   `--' `--' `-----'
 
 
- PVJJK 1.VOS NIINISALO
+ TIETOJÄRJESTELMÄASENTAJIEN INFRA
  r1.net.tjas
 
 ^C
@@ -217,7 +217,7 @@ banner motd "
     `--'    `-----'   `--' `--' `-----'
 
 
- PVJJK 1.VOS NIINISALO
+ TIETOJÄRJESTELMÄASENTAJIEN INFRA
  s1.net.tjas
 
 "
@@ -328,7 +328,7 @@ banner motd "
     `--'    `-----'   `--' `--' `-----'
 
 
- PVJJK 1.VOS NIINISALO
+ TIETOJÄRJESTELMÄASENTAJIEN INFRA
  s2.net.tjas
 
 "
@@ -407,7 +407,7 @@ banner motd "
     `--'    `-----'   `--' `--' `-----'
 
 
- PVJJK 1.VOS NIINISALO
+ TIETOJÄRJESTELMÄASENTAJIEN INFRA
  s3.net.tjas
 
 "
