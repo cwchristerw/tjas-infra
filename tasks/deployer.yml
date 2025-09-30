@@ -913,6 +913,24 @@
     - keycloak
     - sso
 
+- name: "Deployer - Keacloak - Configure - Groups : Create"
+  community.general.keycloak_group:
+    auth_keycloak_url: "http://127.0.0.1:8080"
+    auth_realm: master
+    auth_username: "{{ config.keycloak.users.admin.username }}"
+    auth_password: "{{ config.keycloak.users.admin.password }}"
+    realm: "master"
+    name: "{{ group }}"
+  vars:
+    task_vars:
+      groups:
+        - admin
+        - users
+  loop: "{{ task_vars.groups }}"
+  loop_control:
+    label: "{{ group }}"
+    loop_var: group
+
 - name: "Deployer - Keacloak - Configure - Users : Create"
   community.general.keycloak_user:
     auth_keycloak_url: "http://127.0.0.1:8080"
@@ -927,6 +945,7 @@
       - type: password
         value: "{{ config.keycloak.users[username].password }}"
         temporary: false
+    groups: "{{ config.keycloak.users[username].groups | map('regex_replace', '^(.*)$', '{\"name\": \"\\1\", \"state\": \"present\"}') | map('from_json') | list }}"
     enabled: on
     state: present
   loop: "{{ config.keycloak.users.keys() | list }}"
