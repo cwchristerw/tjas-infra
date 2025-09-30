@@ -38,27 +38,27 @@ exit 1
 }
 
 ti-header "Haetaan pakettien tiedot..."
-sudo apt update
+apt update
 echo -e "\n\n"
 
 ti-header "Asennetaan Ansiblen järjestelmäpaketti riippuvuudet..."
-sudo apt-get install -y python3-pip python3-venv jq git curl lsb-release
+apt-get install -y python3-pip python3-venv jq git curl lsb-release
 echo -e "\n\n"
 
 ti-header "Luodaan Ansiblelle virtuaalinen ympäristö..."
-python3 -m venv $HOME/.venv/ansible
+python3 -m venv /opt/ansible
 echo -e "\n\n"
 
 ti-header "Asennetaan Ansiblen Python-kirjasto riippuvuudet..."
-$HOME/.venv/ansible/bin/pip3 install cryptography dnspython hvac jmespath netaddr pexpect
+/opt/ansible/bin/pip3 install cryptography dnspython hvac jmespath netaddr pexpect
 echo -e "\n\n"
 
 ti-header "Asennetaan Ansible..."
-$HOME/.venv/ansible/bin/pip3 install ansible
+/opt/ansible/bin/pip3 install ansible
 echo -e "\n\n"
 
 ti-header "Asennetaan Ansible kokoelmat..."
-$HOME/.venv/ansible/bin/ansible-galaxy collection install ansible.posix containers.podman --upgrade
+/opt/ansible/bin/ansible-galaxy collection install ansible.posix containers.podman --upgrade
 echo -e "\n\n"
 
 mkdir -p $HOME/.ssh/keys &> /dev/null
@@ -97,7 +97,7 @@ then
 fi
 
 ti-header "Suoritetaan Infran asennus..."
-$HOME/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d $HOME/.ansible/pull/infra --accept-host-key --private-key $HOME/.ssh/keys/infra --vault-password-file $HOME/.ansible/vault/infra tasks.yml -t installer
+/opt/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d $HOME/.ansible/pull/infra --accept-host-key --private-key $HOME/.ssh/keys/infra --vault-password-file $HOME/.ansible/vault/infra tasks.yml -t installer
 echo -e "\n\n"
 
 echo "
