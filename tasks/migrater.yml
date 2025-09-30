@@ -39,7 +39,7 @@
 
 - name: "Migrater : Ansible : Dependencies - Packages"
   ansible.builtin.apt:
-    name: "{{ packages }}"
+    name: "{{ package }}"
     state: latest
   vars:
     ansible_python_interpreter: /usr/bin/python3

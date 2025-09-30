@@ -103,18 +103,27 @@
 
 - name: "Installer : FirewallD : Dependencies - Packages"
   ansible.builtin.apt:
-    name:
+    name: "{{ package }}"
+    state: latest
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    packages:
       - python3-firewall
       - iptables
-    state: latest
+  loop: "{{ packages }}"
+  loop_control:
+    label: "{{ package }}"
+    loop_var: "package"
   tags:
     - firewalld
     - firewall
 
 - name: "Installer : FirewallD : Install"
   ansible.builtin.apt:
-    name: "firewalld"
+    name: firewalld
     state: latest
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
   tags:
     - firewalld
     - firewall
@@ -136,6 +145,7 @@
     immediate: true
     offline: true
   vars:
+    ansible_python_interpreter: /usr/bin/python3
     services:
       - http
       - https
@@ -240,21 +250,30 @@
 
 - name: "Installer : MariaDB : Dependencies - Package : mariadb-client"
   ansible.builtin.apt:
-    name: "mariadb-client"
+    name: mariadb-client
     state: latest
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
   tags:
     - mariadb
     - database
 
 - name: "Installer : Podman : Install"
   ansible.builtin.apt:
-    name:
+    name: "{{ package }}"
+    state: latest
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    packages:
       - podman
       - podman-compose
       - netavark
       - buildah
       - slirp4netns
-    state: latest
+  loop: "{{ packages }}"
+  loop_control:
+    label: "{{ package }}"
+    loop_var: "package"
   tags:
     - podman
 

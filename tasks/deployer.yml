@@ -198,8 +198,7 @@
 
 - name: "Deployer - Kea - Install"
   ansible.builtin.apt:
-    name:
-      - kea
+    name: kea
     state: latest
 
 - name: "Deployer - Kea - Configure - DHCP4"
