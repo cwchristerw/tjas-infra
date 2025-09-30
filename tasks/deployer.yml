@@ -908,7 +908,7 @@
   ansible.builtin.wait_for:
     host: "127.0.0.1"
     port: 8080
-    delay: 15
+    delay: 30
   tags:
     - keycloak
     - sso
