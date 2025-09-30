@@ -8,16 +8,16 @@ auto lo
 iface lo inet loopback
 
 # The primary network interface
-allow-hotplug enp0s25
-iface enp0s25 inet dhcp
+allow-hotplug {{ ansible_facts.interfaces | select('search', '^enp') | first }}
+iface {{ ansible_facts.interfaces | select('search', '^enp') | first }} inet dhcp
 
-auto enp0s25.20
-iface enp0s25.20 inet static
+auto {{ ansible_facts.interfaces | select('search', '^enp') | first }}.20
+iface {{ ansible_facts.interfaces | select('search', '^enp') | first }}.20 inet static
   address 192.168.2.10/27
   gateway 192.168.2.1
   hwaddress 90:1b:0e:5b:18:fb
 
-auto enp0s25.69
-iface enp0s25.69 inet static
+auto {{ ansible_facts.interfaces | select('search', '^enp') | first }}.69
+iface {{ ansible_facts.interfaces | select('search', '^enp') | first }}.69 inet static
   address 192.168.69.20/26
   hwaddress 90:1b:0e:5b:18:fc
