@@ -18,14 +18,16 @@
     2. Vaihda oletusarvoinen käyttöjärjestelmä – `wsl --set-default Debian`
     3. Käynnistä uudelleen käyttöjärjestelmä – `wsl -t Debian`
     4. Sulje ikkuna
-6. Avaa Debian käynnistävalikosta tai suorita Powershellissä komento järjestelmänvalvojana `wsl -d Debian`
-7. Asenna curl-paketti käyttämällä APT-paketinhallintaa – `sudo apt update && sudo apt install curl`
-8. Lataa ja suorita Init.sh skripti – `bash <(curl https://raw.githubusercontent.com/cwchristerw/tjas-infra/refs/heads/master/init.sh)`
+6. Avaa Debian käynnistävalikosta tai suorita Powershellissä komento järjestelmänvalvojana – `wsl -d Debian`
+7. Kohota oikeudet – `sudo su`
+8. Asenna curl-paketti käyttämällä APT-paketinhallintaa – `apt update && apt install curl`
+9. Lataa ja suorita Init.sh skripti – `bash <(curl https://raw.githubusercontent.com/cwchristerw/tjas-infra/refs/heads/master/init.sh)`
 
 **Palvelimen asennus**
 1. Asenna Debian-käyttöjärjestelmä
-2. Asenna curl-paketti käyttämällä APT-paketinhallintaa – `apt update && apt install curl`
-3. Lataa ja suorita Init.sh skripti – `bash <(curl https://raw.githubusercontent.com/cwchristerw/tjas-infra/refs/heads/master/init.sh)`
+2. Kirjaudu root käyttäjänä tai kohota oikeudet – `sudo su`
+3. Asenna curl-paketti käyttämällä APT-paketinhallintaa – `apt update && apt install curl`
+4. Lataa ja suorita Init.sh skripti – `bash <(curl https://raw.githubusercontent.com/cwchristerw/tjas-infra/refs/heads/master/init.sh)`
 
 **Verkkolaitteiden konfigurointi**
 1. Kytke verkkolaitteen Console (Ethernet) porttiin serial portti adapteri sekä yhdistä siihen serial portti USB-adapteri
