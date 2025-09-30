@@ -1142,6 +1142,8 @@
   ansible.builtin.file:
     path: "/root/data/nextcloud/{{ folder }}"
     state: directory
+    owner: www-data
+    group: www-data
   loop: "{{ folders }}"
   loop_control:
     label: "{{ folder }}"
@@ -1160,6 +1162,8 @@
   ansible.builtin.file:
     dest: '/root/data/nextcloud/{{ item.path }}'
     state: directory
+    owner: www-data
+    group: www-data
   with_filetree: './files/nextcloud/'
   loop_control:
     label: "{{ item.path }}"
