@@ -1,35 +1,35 @@
 ---
-- name: "Init : Python 3 : Install"
+- name: "Installer : Python 3 : Install"
   ansible.builtin.raw: apt install -y python3 python3-pip python3-setuptools python3-venv python3-dev
   register: task
   changed_when:
     - "task.stdout.find('0 upgraded, 0 newly installed, 0 to remove') == -1"
 
-- name: "Init: Python 3 : Libraries - APT"
+- name: "Installer: Python 3 : Libraries - APT"
   ansible.builtin.raw: apt install -y python3-apt
   register: task
   changed_when:
     - "task.stdout.find('0 upgraded, 0 newly installed, 0 to remove') == -1"
 
-- name: "Init : Python 3 : Configure - Virtual Environment : Test"
-  ansible.builtin.raw: "/root/.venv/ansible/bin/pip3"
+- name: "Installer : Python 3 : Configure - Virtual Environment : Test"
+  ansible.builtin.raw: "/opt/ansible/bin/pip3"
   register: task632
   changed_when: false
   failed_when: false
 
-- name: "Init : Python 3 : Configure - Virtual Environment : Delete"
+- name: "Installer : Python 3 : Configure - Virtual Environment : Delete"
   ansible.builtin.file:
-    path: "/root/.venv/ansible"
+    path: "/opt/ansible"
     state: absent
   when:
     - "task632.stdout.find(\"ModuleNotFoundError: No module named 'pip'\") != -1"
 
-- name: "Init : Python 3 : Configure - Virtual Environment : Create"
+- name: "Installer : Python 3 : Configure - Virtual Environment : Create"
   ansible.builtin.pip:
     name: pip
     state: latest
     extra_args: --upgrade
-    virtualenv: /root/.venv/ansible
+    virtualenv: /opt/ansible
     virtualenv_command: "python3 -m venv"
 
 - name: "Installer : Tools : Install"
@@ -150,12 +150,47 @@
     - firewalld
     - firewall
 
+- name: "Installer : Ansible : Dependencies - Packages (APT / Debian & Ubuntu & Linux Mint)"
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    packages:
+      - sshpass
+      - lsb-release
+  loop: "{{ packages }}"
+  loop_control:
+    label: "{{ package }}"
+    loop_var: "package"
+
+- name: "Installer : Ansible : Dependencies - Python Libraries"
+  ansible.builtin.pip:
+    name: "{{ library }}"
+    state: latest
+    extra_args: --upgrade
+    virtualenv: /opt/ansible
+    virtualenv_command: "python3 -m venv"
+  vars:
+    libraries:
+      - cryptography
+      - dnspython
+      - hvac
+      - jmespath
+      - netaddr
+      - pexpect
+      - xmltodict
+  loop: "{{ libraries }}"
+  loop_control:
+    label: "{{ library }}"
+    loop_var: "library"
+
 - name: "Installer - Ansible - Python Library"
   ansible.builtin.pip:
     name: ansible
     state: latest
     extra_args: --upgrade
-    virtualenv: /root/.venv/ansible
+    virtualenv: /opt/ansible
     virtualenv_command: "python3 -m venv"
   tags:
     - ansible
@@ -169,7 +204,7 @@
 
 - name: "Installer : Ansible : Create Symbolic Links"
   ansible.builtin.file:
-    src: /root/.venv/ansible/bin/{{ binary }}
+    src: /opt/ansible/bin/{{ binary }}
     dest: /root/bin/{{ binary }}
     state: link
   vars:
@@ -192,34 +227,12 @@
   tags:
     - ansible
 
-- name: "Installer - Ansible - Dependencies - Python Libraries"
-  ansible.builtin.pip:
-    name: "{{ library }}"
-    state: latest
-    extra_args: --upgrade
-    virtualenv: /root/.venv/ansible
-    virtualenv_command: "python3 -m venv"
-  vars:
-    libraries:
-      - cryptography
-      - dnspython
-      - hvac
-      - jmespath
-      - netaddr
-      - pexpect
-  loop: "{{ libraries }}"
-  loop_control:
-    label: "{{ library }}"
-    loop_var: "library"
-  tags:
-    - ansible
-
 - name: "Installer : MariaDB : Dependencies - Python Library : pymysql"
   ansible.builtin.pip:
     name: pymysql
     state: latest
     extra_args: --upgrade
-    virtualenv: /root/.venv/ansible
+    virtualenv: /opt/ansible
     virtualenv_command: "python3 -m venv"
   tags:
     - mariadb
@@ -250,7 +263,7 @@
     name: "Tietojärjestelmäasentajien Infra - Maintenance"
     hour: "*/3"
     minute: "0"
-    job: "/root/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/infra --accept-host-key --private-key /root/.ssh/keys/infra --vault-password-file /root/.ansible/vault/infra tasks.yml -t maintenance"
+    job: "/opt/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/infra --accept-host-key --private-key /root/.ssh/keys/infra --vault-password-file /root/.ansible/vault/infra tasks.yml -t maintenance"
   tags:
     - cron
 
@@ -258,6 +271,6 @@
   ansible.builtin.cron:
     name: "Tietojärjestelmäasentajien Infra - Deployer"
     minute: "*/5"
-    job: "/root/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/infra --accept-host-key --private-key /root/.ssh/keys/infra --vault-password-file /root/.ansible/vault/infra tasks.yml -t deployer"
+    job: "/opt/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/infra --accept-host-key --private-key /root/.ssh/keys/infra --vault-password-file /root/.ansible/vault/infra tasks.yml -t deployer"
   tags:
     - cron

@@ -10,18 +10,109 @@
       - src: /root/.ansible/vault/{{ location | lower | replace('.', '') | replace(' ', '-') }}/infra
         dest: /root/.ansible/vault/infra
 
+- name: "Migrater : Python 3 : Configure - Virtual Environment : Test"
+  ansible.builtin.raw: "/opt/ansible/bin/pip3"
+  register: task632
+  changed_when: false
+  failed_when: false
+
+- name: "Migrater : Python 3 : Configure - Virtual Environment : Delete"
+  ansible.builtin.file:
+    path: "/opt/ansible"
+    state: absent
+  when:
+    - "task632.stdout.find(\"ModuleNotFoundError: No module named 'pip'\") != -1"
+
+- name: "Migrater : Python 3 : Configure - Virtual Environment : Create"
+  ansible.builtin.pip:
+    name: pip
+    state: latest
+    extra_args: --upgrade
+    virtualenv: /opt/ansible
+    virtualenv_command: "python3 -m venv"
+
+- name: "Migrater : Ansible : Dependencies - Packages"
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    packages:
+      - sshpass
+      - lsb-release
+  loop: "{{ packages }}"
+  loop_control:
+    label: "{{ package }}"
+    loop_var: "package"
+
+- name: "Migrater : Ansible : Dependencies - Python Libraries"
+  ansible.builtin.pip:
+    name: "{{ library }}"
+    state: latest
+    extra_args: --upgrade
+    virtualenv: /opt/ansible
+    virtualenv_command: "python3 -m venv"
+  vars:
+    libraries:
+      - cryptography
+      - dnspython
+      - hvac
+      - jmespath
+      - netaddr
+      - pexpect
+      - xmltodict
+  loop: "{{ libraries }}"
+  loop_control:
+    label: "{{ library }}"
+    loop_var: "library"
+
+- name: "Migrater - Ansible - Python Library"
+  ansible.builtin.pip:
+    name: ansible
+    state: latest
+    extra_args: --upgrade
+    virtualenv: /opt/ansible
+    virtualenv_command: "python3 -m venv"
+  tags:
+    - ansible
+
+- name: "Migrater : Ansible : Create Symbolic Links"
+  ansible.builtin.file:
+    src: /opt/ansible/bin/{{ binary }}
+    dest: /bin/{{ binary }}
+    state: link
+  vars:
+    binaries:
+      - ansible
+      - ansible-community
+      - ansible-config
+      - ansible-console
+      - ansible-doc
+      - ansible-galaxy
+      - ansible-inventory
+      - ansible-playbook
+      - ansible-pull
+      - ansible-test
+      - ansible-vault
+  loop: "{{ binaries }}"
+  loop_control:
+    label: "{{ binary }}"
+    loop_var: "binary"
+  tags:
+    - ansible
+
 - name: "Migrater - Schedule : Maintenance"
   ansible.builtin.cron:
     name: "Tietojärjestelmäasentajien Infra - Maintenance"
     hour: "*/3"
     minute: "0"
-    job: "/root/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/infra --accept-host-key --private-key /root/.ssh/keys/infra --vault-password-file /root/.ansible/vault/infra tasks.yml -t maintenance"
+    job: "/opt/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/infra --accept-host-key --private-key /root/.ssh/keys/infra --vault-password-file /root/.ansible/vault/infra tasks.yml -t maintenance"
 
 - name: "Migrater - Schedule : Maintenance"
   ansible.builtin.cron:
     name: "Tietojärjestelmäasentajien Infra - Maintenance"
     minute: "*/5"
-    job: "/root/.venv/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/infra --accept-host-key --private-key /root/.ssh/keys/infra --vault-password-file /root/.ansible/vault/infra tasks.yml -t deployer"
+    job: "/opt/ansible/bin/ansible-pull -U ssh://git@github.com/cwchristerw/tjas-infra -d /root/.ansible/pull/infra --accept-host-key --private-key /root/.ssh/keys/infra --vault-password-file /root/.ansible/vault/infra tasks.yml -t deployer"
 
 - name: "Migrater - Schedule : Deployer"
   ansible.builtin.cron:

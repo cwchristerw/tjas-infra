@@ -4,7 +4,7 @@
     name: "{{ library }}"
     state: latest
     extra_args: --upgrade
-    virtualenv: /root/.venv/ansible
+    virtualenv: /opt/ansible
     virtualenv_command: "python3 -m venv"
   vars:
     libraries:
@@ -24,7 +24,7 @@
     name: ansible
     state: latest
     extra_args: --upgrade
-    virtualenv: /root/.venv/ansible
+    virtualenv: /opt/ansible
     virtualenv_command: "python3 -m venv"
 
 - name: "Maintenance : MariaDB : Dependencies / Python Library : pymysql"
@@ -32,7 +32,7 @@
     name: pymysql
     state: latest
     extra_args: --upgrade
-    virtualenv: /root/.venv/ansible
+    virtualenv: /opt/ansible
     virtualenv_command: "python3 -m venv"
 
 - name: "Maintenance : Podman : Prune"
