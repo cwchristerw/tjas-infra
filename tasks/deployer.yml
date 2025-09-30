@@ -921,6 +921,7 @@
     auth_password: "{{ config.keycloak.users.admin.password }}"
     realm: "master"
     username: "{{ config.keycloak.users[username].username }}"
+    email: "{{ username }}@tjas"
     emailVerified: on
     credentials:
       - type: password
@@ -1053,6 +1054,7 @@
     auth_password: "{{ config.keycloak.users.admin.password }}"
     realm: "master"
     username: "{{ config.keycloak.users.admin.username }}"
+    email: "{{ config.keycloak.users.admin.username }}@tjas"
     emailVerified: on
     attributes:
       - name: is_temporary_admin
