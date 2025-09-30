@@ -9,6 +9,12 @@
         dest: /root/.ssh/keys/infra
       - src: /root/.ansible/vault/{{ location | lower | replace('.', '') | replace(' ', '-') }}/infra
         dest: /root/.ansible/vault/infra
+  loop: "{{ files }}"
+  loop_control:
+    label: "{{ file }}"
+    loop_var: "file"
+  when:
+    - file.src is ansible.builtin.file
 
 - name: "Migrater : Python 3 : Configure - Virtual Environment : Test"
   ansible.builtin.raw: "/opt/ansible/bin/pip3"
